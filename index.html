@@ -60,12 +60,10 @@
   #lightbox.active { opacity: 1; pointer-events: auto; }
   #lightbox-track { position: absolute; inset: 0; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; z-index: 10000; }
   #lightbox-track::-webkit-scrollbar { display: none; }
-  #lightbox-track .lb-slide { flex: 0 0 100%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; scroll-snap-align: center; scroll-snap-stop: always; padding: 20px; box-sizing: border-box; position: relative; }
-  #lightbox-track img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); user-select: none; }
+  #lightbox-track .lb-slide { flex: 0 0 82%; width: 82%; height: 100%; display: flex; align-items: center; justify-content: center; scroll-snap-align: center; scroll-snap-stop: always; padding: 20px 0; box-sizing: border-box; position: relative; transition: transform 0.25s ease-out, opacity 0.25s ease-out; opacity: 0.5; transform: scale(0.85); }
+  #lightbox-track .lb-slide.active-slide { opacity: 1; transform: scale(1); }
+  #lightbox-track img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 24px rgba(0,0,0,0.4); user-select: none; transition: box-shadow 0.3s; }
   #lb-close { position: absolute; top: 20px; right: 24px; color: #fff; font-size: 36px; font-weight: 300; cursor: pointer; z-index: 10002; padding: 10px; }
-  .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); color: #fff; font-size: 44px; font-weight: 300; cursor: pointer; z-index: 10002; padding: 20px; user-select: none; }
-  .lb-prev { left: 0; }
-  .lb-next { right: 0; }
   #lb-counter { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 14px; letter-spacing: 2px; z-index: 10002; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
 </style>
 </head>
@@ -171,9 +169,7 @@
   <!-- 라이트박스 -->
   <div id="lightbox">
     <div id="lb-close">×</div>
-    <div class="lb-nav lb-prev">‹</div>
     <div id="lightbox-track"></div>
-    <div class="lb-nav lb-next">›</div>
     <div id="lb-counter"></div>
   </div>
 
@@ -463,11 +459,10 @@
     });
   }
 
+  var lightboxObserver;
   function setupLightboxEvents() {
     var lb = document.getElementById('lightbox');
     var lbClose = document.getElementById('lb-close');
-    var lbPrev = document.querySelector('.lb-prev');
-    var lbNext = document.querySelector('.lb-next');
     var track = document.getElementById('lightbox-track');
     if(!lb || !track) return;
     
@@ -476,20 +471,23 @@
     });
     if(lbClose) lbClose.addEventListener('click', closeLightbox);
     
-    if(lbPrev) lbPrev.addEventListener('click', function(e) { changeLightboxImage(-1); e.stopPropagation(); });
-    if(lbNext) lbNext.addEventListener('click', function(e) { changeLightboxImage(1); e.stopPropagation(); });
-    
-    var scrollTimeout;
-    track.addEventListener('scroll', function() {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(function() {
-        var idx = Math.round(track.scrollLeft / track.offsetWidth);
-        if(idx !== currentLightboxIndex) {
-          currentLightboxIndex = idx;
-          updateLightboxCounter();
+    lightboxObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if(entry.isIntersecting) {
+          entry.target.classList.add('active-slide');
+          var idx = Array.prototype.indexOf.call(track.children, entry.target);
+          if (currentLightboxIndex !== idx) {
+            currentLightboxIndex = idx;
+            updateLightboxCounter();
+          }
+        } else {
+          entry.target.classList.remove('active-slide');
         }
-      }, 50);
-    }, {passive: true});
+      });
+    }, {
+      root: track,
+      threshold: 0.6
+    });
   }
 
   function openLightboxGroup(group) {
@@ -514,6 +512,8 @@
       
       slide.appendChild(img);
       track.appendChild(slide);
+      
+      if(lightboxObserver) lightboxObserver.observe(slide);
     }
     
     currentLightboxIndex = 0;
