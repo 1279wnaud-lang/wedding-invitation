@@ -49,15 +49,20 @@
   .ph-slot { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#a89f95; font-size:13px; background:#ececed; }
   .ph-slot img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
   
-  /* 갤러리 매스너리 & 라이트박스 */
-  #gallery-masonry { column-count: 2; column-gap: 8px; padding: 0 26px; max-width: 500px; margin: 0 auto; width: 100%; }
-  .gallery-item { margin-bottom: 8px; break-inside: avoid; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); cursor: pointer; background: #ececed; position: relative; aspect-ratio: 2/3; }
+  /* 갤러리 2x2 그리드 & 라이트박스 */
+  #gallery-masonry { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 26px; max-width: 500px; margin: 0 auto; width: 100%; }
+  .gallery-item { border-radius: 4px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); cursor: pointer; background: #ececed; position: relative; aspect-ratio: 2/3; }
   .gallery-item img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s ease; position: relative; z-index: 1; }
   .gallery-item:active img { transform: scale(0.98); }
   
   #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
   #lightbox.active { opacity: 1; pointer-events: auto; }
-  #lightbox img { max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+  #lightbox img { max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); user-select: none; transition: transform 0.2s ease; }
+  #lb-close { position: absolute; top: 20px; right: 24px; color: #fff; font-size: 36px; font-weight: 300; cursor: pointer; z-index: 10001; padding: 10px; }
+  .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); color: #fff; font-size: 44px; font-weight: 300; cursor: pointer; z-index: 10001; padding: 20px; user-select: none; }
+  .lb-prev { left: 0; }
+  .lb-next { right: 0; }
+  #lb-counter { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 14px; letter-spacing: 2px; z-index: 10001; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
 </style>
 </head>
 <body>
@@ -159,8 +164,12 @@
   </section>
 
   <!-- 라이트박스 -->
-  <div id="lightbox" onclick="this.classList.remove('active')">
+  <div id="lightbox" onclick="closeLightbox()" ontouchstart="lbTouchStartX=event.changedTouches[0].screenX" ontouchend="lbTouchEndX=event.changedTouches[0].screenX; if(lbTouchEndX < lbTouchStartX - 40) changeLightboxImage(1); if(lbTouchEndX > lbTouchStartX + 40) changeLightboxImage(-1);">
+    <div id="lb-close" onclick="closeLightbox()">×</div>
+    <div class="lb-nav lb-prev" onclick="changeLightboxImage(-1); event.stopPropagation();">‹</div>
     <img id="lightbox-img" src="" alt="확대 이미지" onclick="event.stopPropagation()">
+    <div class="lb-nav lb-next" onclick="changeLightboxImage(1); event.stopPropagation();">›</div>
+    <div id="lb-counter"></div>
   </div>
 
   <!-- ============ 오시는 길 / 지도 ============ -->
@@ -377,43 +386,38 @@
     });
   }
 
-  /* ---------- 갤러리 매스너리 ---------- */
-  var GALLERY_IMGS = [
-    'gallery-01.jpg', 'gallery-02.jpg', 'gallery-04.jpg', 
-    'gallery-08.jpg', 'gallery-09.jpg', 'gallery-13.jpg', 
-    'gallery-14.jpg', 'gallery-16.jpg', 'gallery-19.jpg', 
-    'gallery-21.jpg', 'gallery-22.jpg', 'gallery-23.jpg', 
-    'gallery-27.jpg', 'gallery-29.jpg', 'gallery-30.jpg'
+  /* ---------- 갤러리 4구역 그룹핑 ---------- */
+  var GALLERY_GROUPS = [
+    { thumb: 'gallery-01.jpg', start: 1, end: 8 },
+    { thumb: 'gallery-09.jpg', start: 9, end: 16 },
+    { thumb: 'gallery-19.jpg', start: 17, end: 22 },
+    { thumb: 'gallery-30.jpg', start: 23, end: 30 }
   ];
+  var currentLightboxGroup = [];
+  var currentLightboxIndex = 0;
+  var lbTouchStartX = 0;
+  var lbTouchEndX = 0;
+
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
+
   function buildGallery() {
     var masonry = document.getElementById('gallery-masonry');
     if (!masonry) return;
     masonry.innerHTML = '';
-    GALLERY_IMGS.forEach(function (filename, idx) {
+    GALLERY_GROUPS.forEach(function (group, idx) {
       var item = document.createElement('div');
       item.className = 'gallery-item';
       
       var ph = document.createElement('div');
       ph.className = 'ph-slot';
-      ph.textContent = pad2(idx + 1);
-      ph.style.fontSize = '15px';
-      ph.style.color = '#c9c0b6';
-      ph.style.fontWeight = '700';
-
+      
       var img = document.createElement('img');
-      img.src = 'images/' + filename;
-      img.alt = '갤러리 ' + pad2(idx + 1);
+      img.src = 'images/' + group.thumb;
+      img.alt = '갤러리 썸네일 ' + pad2(idx + 1);
       img.setAttribute('loading', 'lazy');
       
-      // 라이트박스 열기 이벤트
       item.addEventListener('click', function() {
-        var lb = document.getElementById('lightbox');
-        var lbImg = document.getElementById('lightbox-img');
-        if (lb && lbImg) {
-          lbImg.src = img.src;
-          lb.classList.add('active');
-        }
+        openLightboxGroup(group);
       });
       
       img.addEventListener('error', function () { this.style.display = 'none'; });
@@ -422,6 +426,42 @@
       item.appendChild(img);
       masonry.appendChild(item);
     });
+  }
+
+  function openLightboxGroup(group) {
+    var lb = document.getElementById('lightbox');
+    if (!lb) return;
+    
+    currentLightboxGroup = [];
+    for(var i = group.start; i <= group.end; i++) {
+      currentLightboxGroup.push('images/gallery-' + pad2(i) + '.jpg');
+    }
+    
+    currentLightboxIndex = 0;
+    updateLightboxView();
+    lb.classList.add('active');
+  }
+
+  function closeLightbox() {
+    var lb = document.getElementById('lightbox');
+    if(lb) lb.classList.remove('active');
+  }
+
+  function changeLightboxImage(dir) {
+    if(currentLightboxGroup.length === 0) return;
+    currentLightboxIndex += dir;
+    if (currentLightboxIndex < 0) currentLightboxIndex = currentLightboxGroup.length - 1;
+    if (currentLightboxIndex >= currentLightboxGroup.length) currentLightboxIndex = 0;
+    updateLightboxView();
+  }
+
+  function updateLightboxView() {
+    var lbImg = document.getElementById('lightbox-img');
+    var counter = document.getElementById('lb-counter');
+    if(lbImg && currentLightboxGroup.length > 0) {
+      lbImg.src = currentLightboxGroup[currentLightboxIndex];
+      if(counter) counter.textContent = (currentLightboxIndex + 1) + ' / ' + currentLightboxGroup.length;
+    }
   }
   function updateCounter(idx) {
     // 사용 안 함 (이전 스크롤 연동 방지용 더미)
