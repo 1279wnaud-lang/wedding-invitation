@@ -689,20 +689,74 @@
     }, { passive: false });
   }
 
-  /* ---------- JS Soft Snap ---------- */
+  /* ---------- JS Strict Soft Snap ---------- */
   function setupSoftSnap() {
-    var snapTimeout;
     var isTouching = false;
+    var startY = 0;
+    var startTime = 0;
     
-    document.addEventListener('touchstart', function() { isTouching = true; }, {passive: true});
-    document.addEventListener('touchend', function() { isTouching = false; }, {passive: true});
+    document.addEventListener('touchstart', function(e) { 
+      isTouching = true; 
+      startY = e.touches[0].clientY;
+      startTime = Date.now();
+    }, {passive: true});
     
+    document.addEventListener('touchend', function(e) { 
+      isTouching = false; 
+      if(document.getElementById('lightbox') && document.getElementById('lightbox').classList.contains('active')) return;
+
+      var endY = e.changedTouches[0].clientY;
+      var deltaY = startY - endY; // 양수면 스와이프 올림 (화면은 내려감)
+      var timeDiff = Date.now() - startTime;
+      var vh = window.innerHeight;
+      var navH = 74;
+
+      var isFastSwipe = (timeDiff < 300 && Math.abs(deltaY) > 30);
+      var isLongDrag = (Math.abs(deltaY) > vh * 0.15);
+
+      if (!isFastSwipe && !isLongDrag) {
+        snapToClosest();
+        return;
+      }
+
+      var sections = Array.from(document.querySelectorAll('section'));
+      var currentIdx = 0;
+      var minDistance = Infinity;
+      
+      sections.forEach(function(sec, idx) {
+        var distance = Math.abs(sec.getBoundingClientRect().top);
+        if(distance < minDistance) {
+          minDistance = distance;
+          currentIdx = idx;
+        }
+      });
+
+      var currentSec = sections[currentIdx];
+      var rect = currentSec.getBoundingClientRect();
+
+      // 긴 섹션 내부를 스크롤 중일 때는 1칸 강제 스냅 금지 (관성 스크롤 허용)
+      if (rect.height > vh - navH + 10) {
+        if (deltaY > 0 && rect.bottom > vh - navH + 10) return; 
+        if (deltaY < 0 && rect.top < -10) return;
+      }
+
+      // 무조건 1칸만 이동 (관성 무시)
+      if (deltaY > 0) currentIdx++;
+      else currentIdx--;
+
+      if (currentIdx < 0) currentIdx = 0;
+      if (currentIdx >= sections.length) currentIdx = sections.length - 1;
+
+      // 스무스 스크롤 트리거 (네이티브 모멘텀 즉시 캔슬 효과)
+      window.scrollTo({ top: window.scrollY + sections[currentIdx].getBoundingClientRect().top, behavior: 'smooth' });
+
+    }, {passive: true});
+
+    var snapTimeout;
     window.addEventListener('scroll', function() {
       clearTimeout(snapTimeout);
       snapTimeout = setTimeout(function() {
-        if(!isTouching) {
-          snapToClosest();
-        }
+        if(!isTouching) snapToClosest();
       }, 150);
     }, { passive: true });
 
@@ -717,12 +771,10 @@
       sections.forEach(function(sec) {
         var rect = sec.getBoundingClientRect();
         
-        // If section is taller than viewport, skip snap if we are reading the middle
         if(rect.height > vh + 10) {
            if(rect.top < -10 && rect.bottom > vh + 10) return;
         }
         
-        // Snap to top if it's within 35% of the screen height
         var distTop = Math.abs(rect.top);
         if(distTop < vh * 0.35 && distTop < minDistance) {
            minDistance = distTop;
