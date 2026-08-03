@@ -52,7 +52,7 @@
   /* 갤러리 매스너리 & 라이트박스 */
   #gallery-masonry { column-count: 2; column-gap: 8px; padding: 0 26px; max-width: 500px; margin: 0 auto; width: 100%; }
   .gallery-item { margin-bottom: 8px; break-inside: avoid; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); cursor: pointer; background: #ececed; position: relative; aspect-ratio: 2/3; }
-  .gallery-item img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s ease; }
+  .gallery-item img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s ease; position: relative; z-index: 1; }
   .gallery-item:active img { transform: scale(0.98); }
   
   #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
