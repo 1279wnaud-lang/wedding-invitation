@@ -59,7 +59,7 @@
   #lightbox.active { opacity: 1; pointer-events: auto; }
   #lightbox-track { position: absolute; inset: 0; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; z-index: 10000; }
   #lightbox-track::-webkit-scrollbar { display: none; }
-  #lightbox-track .lb-slide { flex: 0 0 100%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; scroll-snap-align: center; padding: 20px; box-sizing: border-box; position: relative; }
+  #lightbox-track .lb-slide { flex: 0 0 100%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; scroll-snap-align: center; scroll-snap-stop: always; padding: 20px; box-sizing: border-box; position: relative; }
   #lightbox-track img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); user-select: none; }
   #lb-close { position: absolute; top: 20px; right: 24px; color: #fff; font-size: 36px; font-weight: 300; cursor: pointer; z-index: 10002; padding: 10px; }
   .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); color: #fff; font-size: 44px; font-weight: 300; cursor: pointer; z-index: 10002; padding: 20px; user-select: none; }
@@ -393,7 +393,7 @@
   var GALLERY_GROUPS = [
     { thumb: 'gallery-01.jpg', start: 1, end: 8 },
     { thumb: 'gallery-14.jpg', start: 9, end: 16 },
-    { thumb: 'gallery-19.jpg', start: 17, end: 22 },
+    { thumb: 'gallery-21.jpg', start: 17, end: 22 },
     { thumb: 'gallery-30.jpg', start: 23, end: 30 }
   ];
   var currentLightboxGroup = [];
