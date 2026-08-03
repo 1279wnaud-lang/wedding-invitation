@@ -51,9 +51,15 @@
   
   /* 갤러리 2x2 그리드 & 라이트박스 */
   #gallery-masonry { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 26px; max-width: 500px; margin: 0 auto; width: 100%; }
-  .gallery-item { border-radius: 4px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); cursor: pointer; background: #ececed; position: relative; aspect-ratio: 2/3; }
-  .gallery-item img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s ease; position: relative; z-index: 1; }
+  .gallery-item { cursor: pointer; position: relative; aspect-ratio: 2/3; margin-bottom: 8px; }
+  .gallery-item::before, .gallery-item::after { content: ''; position: absolute; inset: 0; background: #fff; border: 1px solid #e5e5e5; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); z-index: 0; transition: transform 0.2s ease; }
+  .gallery-item::before { transform: rotate(-3deg); }
+  .gallery-item::after { transform: rotate(3deg); }
+  .gallery-item:active::before { transform: rotate(-1deg); }
+  .gallery-item:active::after { transform: rotate(1deg); }
+  .gallery-item img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s ease; position: relative; z-index: 1; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); background: #ececed; }
   .gallery-item:active img { transform: scale(0.98); }
+  .album-badge { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.55); color: #fff; font-size: 11px; padding: 3px 8px; border-radius: 12px; z-index: 3; display: flex; align-items: center; letter-spacing: 0.5px; backdrop-filter: blur(2px); font-weight: 500; pointer-events: none; }
   
   #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
   #lightbox.active { opacity: 1; pointer-events: auto; }
@@ -162,6 +168,7 @@
     <div style="text-align:center;margin-bottom:24px;padding:0 26px;">
       <div style="font-size:11px;letter-spacing:0.34em;color:#7c1d2a;font-weight:700;">GALLERY</div>
       <div style="font-size:20px;font-weight:800;color:#1b1714;margin-top:8px;">우리의 순간</div>
+      <div style="font-size:13px;color:#8a857f;margin-top:10px;">사진을 터치하시면 더 많은 사진을 보실 수 있습니다.</div>
     </div>
     <div id="gallery-masonry"></div>
   </section>
@@ -419,6 +426,11 @@
       img.alt = '갤러리 썸네일 ' + pad2(idx + 1);
       img.setAttribute('loading', 'lazy');
       
+      var badge = document.createElement('div');
+      badge.className = 'album-badge';
+      var count = group.end - group.start + 1;
+      badge.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>+ ' + count;
+      
       item.addEventListener('click', function() {
         openLightboxGroup(group);
       });
@@ -427,6 +439,7 @@
       
       item.appendChild(ph);
       item.appendChild(img);
+      item.appendChild(badge);
       masonry.appendChild(item);
     });
   }
@@ -522,14 +535,14 @@
   /* ---------- 계좌 ---------- */
   var ACCOUNTS = {
     groom: [
-      { role: '신랑', name: '장주명', acct: '○○은행 000-0000-0000' },
-      { role: '아버지', name: '장근', acct: '○○은행 000-0000-0000' },
-      { role: '어머니', name: '지우분', acct: '○○은행 000-0000-0000' }
+      { role: '신랑', name: '장주명', acct: '카카오뱅크 3333217694300' },
+      { role: '아버지', name: '장근', acct: '카카오뱅크 3333346205194' },
+      { role: '어머니', name: '지우분', acct: '카카오뱅크 3333223329480' }
     ],
     bride: [
-      { role: '신부', name: '박미나', acct: '○○은행 000-0000-0000' },
-      { role: '아버지', name: '박영순', acct: '○○은행 000-0000-0000' },
-      { role: '어머니', name: '권용희', acct: '○○은행 000-0000-0000' }
+      { role: '신부', name: '박미나', acct: '기업은행 31308580301012' },
+      { role: '아버지', name: '박영순', acct: '국민은행 23140104050103' },
+      { role: '어머니', name: '권용희', acct: '기업은행 31308580301012' }
     ]
   };
   var toastTimer;
