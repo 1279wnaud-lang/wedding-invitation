@@ -364,6 +364,22 @@
     if (s) s.textContent = sentence;
   }
 
+  /* ---------- 스크롤 페이드 (IntersectionObserver 적용) ---------- */
+  function setupFades() {
+    if (!window.IntersectionObserver) return;
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -15% 0px' });
+
+    var els = document.querySelectorAll('.fade-wrap, .fade-up');
+    els.forEach(function (el) { observer.observe(el); });
+  }
+
   /* ---------- 하단 탭 ---------- */
   var TABS = [
     { id: 'greeting', en: 'GREETING', ko: '인사' },
@@ -405,7 +421,7 @@
     if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' });
   }
 
-  /* ---------- 스크롤: 활성 탭 + 페이드 ---------- */
+  /* ---------- 스크롤: 활성 탭 ---------- */
   function updateActive() {
     var ids = ['greeting', 'calendar', 'gallery', 'location', 'account'];
     var mark = window.innerHeight * 0.42, cur = 'greeting';
@@ -414,14 +430,6 @@
       if (el && el.getBoundingClientRect().top <= mark) cur = id;
     });
     if (cur !== active) { active = cur; paintTabs(); }
-  }
-  function updateFades() {
-    var vh = window.innerHeight;
-    document.querySelectorAll('section').forEach(function (sec) {
-      var r = sec.getBoundingClientRect();
-      var op = Math.max(0, Math.min(1, (r.bottom - vh * 0.35) / (vh * 0.35)));
-      sec.style.opacity = op;
-    });
   }
 
   /* ---------- 갤러리 4구역 그룹핑 ---------- */
@@ -544,24 +552,11 @@
     if(lb) lb.classList.remove('active');
   }
 
-  function changeLightboxImage(dir) {
-    var track = document.getElementById('lightbox-track');
-    if(!track || currentLightboxGroup.length === 0) return;
-    currentLightboxIndex += dir;
-    if (currentLightboxIndex < 0) currentLightboxIndex = currentLightboxGroup.length - 1;
-    if (currentLightboxIndex >= currentLightboxGroup.length) currentLightboxIndex = 0;
-    track.scrollTo({ left: currentLightboxIndex * track.offsetWidth, behavior: 'smooth' });
-    updateLightboxCounter();
-  }
-
   function updateLightboxCounter() {
     var counter = document.getElementById('lb-counter');
     if(counter && currentLightboxGroup.length > 0) {
       counter.textContent = (currentLightboxIndex + 1) + ' / ' + currentLightboxGroup.length;
     }
-  }
-  function updateCounter(idx) {
-    // 사용 안 함 (이전 스크롤 연동 방지용 더미)
   }
 
   /* ---------- 계좌 ---------- */
@@ -619,14 +614,13 @@
     });
   }
 
-  /* ---------- HOME: 레터링 + 자동 컬러 확산 ---------- */
+  /* ---------- HOME: 레터링 ---------- */
   function startLettering() {
     var el = document.getElementById('lettering');
     if (el) {
       el.style.opacity = '1';
       el.querySelectorAll('div').forEach(function (d) { d.style.animationPlayState = 'running'; });
     }
-    // 레터링 애니메이션 (약 2.4s) 후 0.3s 뒤 자동 시작
     setTimeout(fireColorReveal, 2700);
   }
   function fireColorReveal() {
@@ -638,16 +632,13 @@
     layers.forEach(function (l) { l.style.transition = CLIP_T; l.style.opacity = '1'; });
     if (s) s.style.setProperty('--reveal-r', '115%');
 
-    // 2.1s (애니메이션 완료) + 0.3s (감상 시간) 대기 후 잠금 해제 및 이동
     setTimeout(function() {
       document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
       document.documentElement.style.touchAction = '';
       document.body.style.touchAction = '';
       var greeting = document.getElementById('greeting');
-      if (greeting) {
-        greeting.scrollIntoView({ behavior: 'smooth' });
-      }
+      if (greeting) greeting.scrollIntoView({ behavior: 'smooth' });
     }, 2400);
   }
 
@@ -655,42 +646,24 @@
   function preventZoom() {
     document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
     document.addEventListener('gesturechange', function (e) { e.preventDefault(); });
-    var last = 0;
-    document.addEventListener('touchend', function (e) {
-      var n = Date.now();
-      if (n - last <= 300) e.preventDefault();
-      last = n;
-    }, { passive: false });
-    document.addEventListener('touchmove', function (e) {
-      if (e.touches && e.touches.length > 1) e.preventDefault();
-    }, { passive: false });
   }
 
   /* ---------- PC Wheel Fullpage ---------- */
   function setupWheelScroll() {
-    if('ontouchstart' in window || navigator.maxTouchPoints > 0) return; // 모바일은 CSS 스냅 사용
+    if('ontouchstart' in window || navigator.maxTouchPoints > 0) return;
     var isWheelScrolling = false;
     window.addEventListener('wheel', function(e) {
       if(document.getElementById('lightbox') && document.getElementById('lightbox').classList.contains('active')) return;
       var sections = Array.from(document.querySelectorAll('section'));
       if(sections.length === 0) return;
-      
       e.preventDefault();
       if(isWheelScrolling) return;
-
-      var currentIdx = 0;
-      var minDistance = Infinity;
+      var currentIdx = 0, minDistance = Infinity;
       sections.forEach(function(sec, idx) {
         var distance = Math.abs(sec.getBoundingClientRect().top);
-        if(distance < minDistance) {
-          minDistance = distance;
-          currentIdx = idx;
-        }
+        if(distance < minDistance) { minDistance = distance; currentIdx = idx; }
       });
-
-      if (e.deltaY > 0) currentIdx++;
-      else currentIdx--;
-
+      if (e.deltaY > 0) currentIdx++; else currentIdx--;
       if (currentIdx >= 0 && currentIdx < sections.length) {
         isWheelScrolling = true;
         sections[currentIdx].scrollIntoView({ behavior: 'smooth' });
@@ -701,133 +674,72 @@
 
   /* ---------- JS Strict Soft Snap ---------- */
   function setupSoftSnap() {
-    var isTouching = false;
-    var startY = 0;
-    var startTime = 0;
-    
+    var isTouching = false, startY = 0, startTime = 0, isAutoSnapping = false;
     document.addEventListener('touchstart', function(e) { 
-      isTouching = true; 
-      startY = e.touches[0].clientY;
-      startTime = Date.now();
+      isTouching = true; startY = e.touches[0].clientY; startTime = Date.now();
     }, {passive: true});
     
+    function doSnap(targetTop) {
+      if (isAutoSnapping) return;
+      isAutoSnapping = true;
+      window.scrollTo({ top: targetTop, behavior: 'smooth' });
+      setTimeout(function() { isAutoSnapping = false; }, 600);
+    }
+
     document.addEventListener('touchend', function(e) { 
       isTouching = false; 
       if(document.getElementById('lightbox') && document.getElementById('lightbox').classList.contains('active')) return;
-
-      var endY = e.changedTouches[0].clientY;
-      var deltaY = startY - endY; // 양수면 스와이프 올림 (화면은 내려감)
-      var timeDiff = Date.now() - startTime;
-      var vh = window.innerHeight;
-      var navH = 74;
-
-      var isFastSwipe = (timeDiff < 300 && Math.abs(deltaY) > 30);
-      var isLongDrag = (Math.abs(deltaY) > vh * 0.15);
-
-      if (!isFastSwipe && !isLongDrag) {
-        snapToClosest();
-        return;
-      }
-
-      var sections = Array.from(document.querySelectorAll('section'));
-      var currentIdx = 0;
-      var minDistance = Infinity;
-      
+      var endY = e.changedTouches[0].clientY, deltaY = startY - endY, timeDiff = Date.now() - startTime;
+      var vh = window.innerHeight, navH = 74;
+      var isFastSwipe = (timeDiff < 300 && Math.abs(deltaY) > 30), isLongDrag = (Math.abs(deltaY) > vh * 0.15);
+      if (!isFastSwipe && !isLongDrag) { snapToClosest(); return; }
+      var sections = Array.from(document.querySelectorAll('section')), currentIdx = 0, minDistance = Infinity;
       sections.forEach(function(sec, idx) {
         var distance = Math.abs(sec.getBoundingClientRect().top);
-        if(distance < minDistance) {
-          minDistance = distance;
-          currentIdx = idx;
-        }
+        if(distance < minDistance) { minDistance = distance; currentIdx = idx; }
       });
-
-      var currentSec = sections[currentIdx];
-      var rect = currentSec.getBoundingClientRect();
-
-      // 긴 섹션 내부를 스크롤 중일 때는 1칸 강제 스냅 금지 (관성 스크롤 허용)
+      var currentSec = sections[currentIdx], rect = currentSec.getBoundingClientRect();
       if (rect.height > vh - navH + 10) {
         if (deltaY > 0 && rect.bottom > vh - navH + 10) return; 
         if (deltaY < 0 && rect.top < -10) return;
       }
-
-      // 무조건 1칸만 이동 (관성 무시)
-      if (deltaY > 0) currentIdx++;
-      else currentIdx--;
-
+      if (deltaY > 0) currentIdx++; else currentIdx--;
       if (currentIdx < 0) currentIdx = 0;
       if (currentIdx >= sections.length) currentIdx = sections.length - 1;
-
-      // 스무스 스크롤 트리거 (네이티브 모멘텀 즉시 캔슬 효과)
-      window.scrollTo({ top: window.scrollY + sections[currentIdx].getBoundingClientRect().top, behavior: 'smooth' });
-
+      doSnap(window.scrollY + sections[currentIdx].getBoundingClientRect().top);
     }, {passive: true});
 
     var snapTimeout;
     window.addEventListener('scroll', function() {
+      if (isAutoSnapping) return;
       clearTimeout(snapTimeout);
-      snapTimeout = setTimeout(function() {
-        if(!isTouching) snapToClosest();
-      }, 150);
+      snapTimeout = setTimeout(function() { if(!isTouching && !isAutoSnapping) snapToClosest(); }, 150);
     }, { passive: true });
 
     function snapToClosest() {
       if(document.getElementById('lightbox') && document.getElementById('lightbox').classList.contains('active')) return;
-
-      var sections = Array.from(document.querySelectorAll('section'));
-      var vh = window.innerHeight;
-      var snapTarget = -1;
-      var minDistance = Infinity;
-      
+      var sections = Array.from(document.querySelectorAll('section')), vh = window.innerHeight, snapTarget = -1, minDistance = Infinity;
       sections.forEach(function(sec) {
         var rect = sec.getBoundingClientRect();
-        
-        if(rect.height > vh + 10) {
-           if(rect.top < -10 && rect.bottom > vh + 10) return;
-        }
-        
+        if(rect.height > vh + 10 && rect.top < -10 && rect.bottom > vh + 10) return;
         var distTop = Math.abs(rect.top);
-        if(distTop < vh * 0.35 && distTop < minDistance) {
-           minDistance = distTop;
-           snapTarget = window.scrollY + rect.top;
-        }
+        if(distTop < vh * 0.35 && distTop < minDistance) { minDistance = distTop; snapTarget = window.scrollY + rect.top; }
       });
-      
-      if(snapTarget !== -1 && minDistance > 2) {
-         window.scrollTo({ top: snapTarget, behavior: 'smooth' });
-      }
+      if(snapTarget !== -1 && minDistance > 2) doSnap(snapTarget);
     }
   }
 
   /* ---------- Kakao Share API ---------- */
   function setupKakaoShare() {
-    if (typeof Kakao !== 'undefined' && !Kakao.isInitialized()) {
-      Kakao.init('34f3eed6c5093c856c9616335107552a');
-    }
+    if (typeof Kakao !== 'undefined' && !Kakao.isInitialized()) Kakao.init('34f3eed6c5093c856c9616335107552a');
     var btn = document.getElementById('btn-kakao-share');
     if (btn) {
       btn.addEventListener('click', function() {
         if (typeof Kakao !== 'undefined') {
           Kakao.Share.sendDefault({
             objectType: 'feed',
-            content: {
-              title: '장주명 ♡ 박미나 결혼합니다.',
-              imageUrl: 'https://1279wnaud-lang.github.io/wedding-invitation/images/og-main.jpg',
-              imageWidth: 1400,
-              imageHeight: 2100,
-              link: {
-                mobileWebUrl: 'https://1279wnaud-lang.github.io/wedding-invitation/',
-                webUrl: 'https://1279wnaud-lang.github.io/wedding-invitation/'
-              }
-            },
-            buttons: [
-              {
-                title: '모바일 청첩장 보기',
-                link: {
-                  mobileWebUrl: 'https://1279wnaud-lang.github.io/wedding-invitation/',
-                  webUrl: 'https://1279wnaud-lang.github.io/wedding-invitation/'
-                }
-              }
-            ]
+            content: { title: '장주명 ♡ 박미나 결혼합니다.', imageUrl: 'https://1279wnaud-lang.github.io/wedding-invitation/images/og-main.jpg', imageWidth: 1400, imageHeight: 2100, link: { mobileWebUrl: 'https://1279wnaud-lang.github.io/wedding-invitation/', webUrl: 'https://1279wnaud-lang.github.io/wedding-invitation/' } },
+            buttons: [{ title: '모바일 청첩장 보기', link: { mobileWebUrl: 'https://1279wnaud-lang.github.io/wedding-invitation/', webUrl: 'https://1279wnaud-lang.github.io/wedding-invitation/' } }]
           });
         }
       });
@@ -838,9 +750,6 @@
   function init() {
     document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
-    document.documentElement.style.touchAction = 'none';
-    document.body.style.touchAction = 'none';
-
     setVH();
     buildCalendar();
     computeDday();
@@ -852,23 +761,26 @@
     setupWheelScroll();
     setupSoftSnap();
     setupKakaoShare();
+    setupFades();
     updateActive();
-    updateFades();
 
-    var track = document.getElementById('gallery-track');
-    if (track) {
-      // 삭제됨
-    }
-
-    window.addEventListener('scroll', function () { updateActive(); updateFades(); }, { passive: true });
+    var scrollRaf;
+    window.addEventListener('scroll', function () { 
+      if (scrollRaf) return;
+      scrollRaf = requestAnimationFrame(function() {
+        updateActive(); 
+        scrollRaf = null;
+      });
+    }, { passive: true });
+    
     window.addEventListener('resize', setVH);
     window.addEventListener('orientationchange', setVH);
     if (window.visualViewport) window.visualViewport.addEventListener('resize', setVH);
 
     setInterval(computeDday, 60 * 60 * 1000);
-    setTimeout(function () { setVH(); updateFades(); }, 100);
-    setTimeout(function () { setVH(); updateFades(); }, 500);
-    setTimeout(function () { setVH(); updateFades(); }, 1200);
+    setTimeout(function () { setVH(); }, 100);
+    setTimeout(function () { setVH(); }, 500);
+    setTimeout(function () { setVH(); }, 1200);
 
     var kick = function () { requestAnimationFrame(function () { requestAnimationFrame(startLettering); }); };
     if (document.fonts && document.fonts.ready) { document.fonts.ready.then(kick); } else { kick(); }
