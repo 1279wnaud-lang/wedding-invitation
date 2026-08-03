@@ -71,18 +71,17 @@
 
     <div style="position: absolute; top: var(--letter-top, 20px); left: 0; right: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 24px">
       <div id="lettering" style="font-family: var(--font-script); color: #c1121f; line-height: 1.18; padding: 12px 0; text-shadow: 0 2px 14px rgba(246,242,236,0.65); display: flex; flex-direction: column; align-items: center; opacity: 0; transition: opacity .35s ease;">
-        <div style="font-family: 'Authentic Birthday',cursive; font-size: clamp(50px, 19cqw, 90px); animation: drawIn 0.8s linear both; animation-play-state: paused; width: 288px; height: 85px; color: #FFFFFF; position: static">Welcome</div><div style="font-family: 'Authentic Birthday',cursive; font-size: clamp(42px, 15cqw, 70px); margin-top: 2px; animation: drawIn 0.8s linear 0.8s both; animation-play-state: paused; width: 411px; height: 87px; color: #FFFFFF">to our wedding</div><div style="font-size: clamp(24px, 8.5cqw, 42px); margin-top: 2px; animation: drawIn 0.8s linear 1.6s both; animation-play-state: paused; width: 163px; color: #FFFFFF">2026 . 11 . 22</div>
+        <div style="font-family: 'Authentic Birthday',cursive; font-size: clamp(50px, 19cqw, 90px); animation: drawIn 0.8s linear both; animation-play-state: paused; width: 288px; height: 85px; color: #FFFFFF; position: static">Welcome</div><div style="font-family: 'Authentic Birthday',cursive; font-size: clamp(42px, 15cqw, 70px); margin-top: 2px; animation: drawIn 0.8s linear 0.8s both; animation-play-state: paused; width: 411px; height: 87px; color: #FFFFFF">to our wedding</div><div style="font-size: clamp(24px, 8.5cqw, 42px); margin-top: -15px; animation: drawIn 0.8s linear 1.6s both; animation-play-state: paused; width: auto; color: #FFFFFF">2026.11.22 SUN</div>
       </div>
     </div>
     <div id="lettering-color-layer" style="position:absolute;inset:0;z-index:4;pointer-events:none;clip-path:circle(var(--reveal-r,0px) at var(--reveal-x,37%) var(--reveal-y,60%));-webkit-clip-path:circle(var(--reveal-r,0px) at var(--reveal-x,28%) var(--reveal-y,62%));transition:clip-path var(--reveal-dur,2.1s) cubic-bezier(.22,.61,.36,1), -webkit-clip-path var(--reveal-dur,2.1s) cubic-bezier(.22,.61,.36,1);">
       <div style="position: absolute; top: var(--letter-top, 20px); left: 0; right: 0; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 24px">
         <div style="font-family: var(--font-script); color: #A80505; line-height: 1.18; padding: 12px 0; text-shadow: 0 2px 14px rgba(246,242,236,0.65); display: flex; flex-direction: column; align-items: center;">
-          <div style="font-family: 'Authentic Birthday',cursive; font-size: clamp(50px, 19cqw, 90px); width: 288px; height: 85px; color: #A80505; position: static">Welcome</div><div style="font-family: 'Authentic Birthday',cursive; font-size: clamp(42px, 15cqw, 70px); margin-top: 2px; width: 411px; height: 87px; color: #A80505">to our wedding</div><div style="font-size: clamp(24px, 8.5cqw, 42px); margin-top: 2px; width: 163px; color: #A80505">2026 . 11 . 22</div>
+          <div style="font-family: 'Authentic Birthday',cursive; font-size: clamp(50px, 19cqw, 90px); width: 288px; height: 85px; color: #A80505; position: static">Welcome</div><div style="font-family: 'Authentic Birthday',cursive; font-size: clamp(42px, 15cqw, 70px); margin-top: 2px; width: 411px; height: 87px; color: #A80505">to our wedding</div><div style="font-size: clamp(24px, 8.5cqw, 42px); margin-top: -15px; width: auto; color: #A80505">2026.11.22 SUN</div>
         </div>
       </div>
     </div>
     <div style="position:absolute;bottom:0;left:0;right:0;z-index:3;display:flex;flex-direction:column;align-items:center;padding-bottom:96px;">
-      <div id="reveal-hint" style="font-family:var(--font-body);font-size:12px;letter-spacing:0.08em;color:#5A0200;margin-bottom:14px;opacity:0;animation:hintBlink 1.8s ease-in-out infinite;animation-play-state:paused;">화면을 터치해 보세요</div>
       <div style="animation:bob 1.8s ease-in-out infinite;display:flex;justify-content:center;"><div style="width:26px;height:26px;border-right:2px solid #241f1b;border-bottom:2px solid #241f1b;transform:rotate(45deg);"></div></div>
     </div>
   </section>
@@ -483,61 +482,24 @@
     });
   }
 
-  /* ---------- HOME: 레터링 + 터치 컬러 확산 토글 ---------- */
-  var revealArmed = false;
+  /* ---------- HOME: 레터링 + 자동 컬러 확산 ---------- */
   function startLettering() {
     var el = document.getElementById('lettering');
     if (el) {
       el.style.opacity = '1';
       el.querySelectorAll('div').forEach(function (d) { d.style.animationPlayState = 'running'; });
     }
-    setTimeout(armReveal, 2500);
+    // 레터링 애니메이션 (약 2.4s) 후 0.3s 뒤 자동 시작
+    setTimeout(fireColorReveal, 2700);
   }
-  function armReveal() {
-    if (revealArmed) return; revealArmed = true;
+  function fireColorReveal() {
     var s = document.getElementById('home');
-    var hint = document.getElementById('reveal-hint');
     var color = document.getElementById('home-color');
     var letterColor = document.getElementById('lettering-color-layer');
     var layers = [color, letterColor].filter(Boolean);
     var CLIP_T = 'clip-path var(--reveal-dur,2.1s) cubic-bezier(.22,.61,.36,1), -webkit-clip-path var(--reveal-dur,2.1s) cubic-bezier(.22,.61,.36,1)';
-    var FADE_T = 'opacity var(--collapse-dur,0.1s) ease-in-out';
-    if (hint) hint.style.animationPlayState = 'running';
-    var busy = false, fired = false, revealed = false, lastFire = 0, lk;
-    function fire() {
-      var now = Date.now();
-      if (now - lastFire < 600) return;
-      lastFire = now;
-      if (busy || !s || !color) return;
-      busy = true;
-      if (!fired) { fired = true; if (hint) { hint.style.animationPlayState = 'paused'; hint.style.opacity = '0'; } }
-      revealed = !revealed;
-      if (revealed) {
-        layers.forEach(function (l) { l.style.transition = CLIP_T; l.style.opacity = '1'; });
-        s.style.setProperty('--reveal-r', '115%');
-        var done = function (e) { if (e && e.propertyName && e.propertyName.indexOf('clip') === -1) return; color.removeEventListener('transitionend', done); busy = false; };
-        color.addEventListener('transitionend', done);
-        clearTimeout(lk); lk = setTimeout(function () { busy = false; }, 2600);
-      } else {
-        layers.forEach(function (l) { l.style.transition = FADE_T; l.style.opacity = '0'; });
-        var done2 = function (e) {
-          if (e && e.propertyName && e.propertyName !== 'opacity') return;
-          color.removeEventListener('transitionend', done2);
-          layers.forEach(function (l) { l.style.transition = 'none'; });
-          s.style.setProperty('--reveal-r', '0px');
-          layers.forEach(function (l) { void l.offsetWidth; l.style.opacity = '1'; });
-          layers.forEach(function (l) { l.style.transition = CLIP_T; });
-          busy = false;
-        };
-        color.addEventListener('transitionend', done2);
-        clearTimeout(lk); lk = setTimeout(function () { busy = false; }, 400);
-      }
-    }
-    if (s) {
-      s.addEventListener('click', fire);
-      s.addEventListener('pointerdown', fire);
-      s.addEventListener('touchstart', fire, { passive: true });
-    }
+    layers.forEach(function (l) { l.style.transition = CLIP_T; l.style.opacity = '1'; });
+    if (s) s.style.setProperty('--reveal-r', '115%');
   }
 
   /* ---------- 확대 방지 ---------- */
