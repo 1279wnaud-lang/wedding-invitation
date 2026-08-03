@@ -29,6 +29,9 @@
 <meta name="twitter:description" content="2026년 11월 22일 일요일 오후 3시 · 웨딩그룹위더스 안양 9F 메리엘">
 <meta name="twitter:image" content="https://1279wnaud-lang.github.io/wedding-invitation/images/og-main.jpg">
 
+<!-- Kakao SDK -->
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"></script>
+
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; padding: 0; }
@@ -282,6 +285,13 @@
       <div style="font-size:14px;font-weight:800;color:#1b1714;">🌸 화환은 정중히 사양합니다</div>
       <div style="font-size:13px;color:#6a625a;margin-top:8px;line-height:1.7;">축하해 주시는 따뜻한 마음만<br>감사히 받겠습니다.</div>
     </div>
+      <!-- Kakao Share Button -->
+      <div style="margin-top:30px; text-align:center;">
+        <button id="btn-kakao-share" style="width:100%; max-width:340px; background-color:#FEE500; color:#000000; border:none; border-radius:8px; padding:16px 20px; font-size:15px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; margin:0 auto; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 4C5.37258 4 0 8.1691 0 13.3134C0 16.5332 2.01502 19.3789 5.09341 21.0507C4.83401 22.062 3.8291 25.1098 3.75471 25.3787C3.75471 25.3787 3.65582 25.7538 3.91899 25.7337C4.18215 25.7136 7.42082 23.4938 8.87413 22.4633C9.88055 22.6288 10.9234 22.7153 12 22.7153C18.6274 22.7153 24 18.5462 24 13.3134C24 8.1691 18.6274 4 12 4Z" fill="#000000"/></svg>
+          카카오톡으로 예쁘게 공유하기
+        </button>
+      </div>
   </section>
 
   <!-- ============ FOOTER ============ -->
@@ -788,6 +798,42 @@
     }
   }
 
+  /* ---------- Kakao Share API ---------- */
+  function setupKakaoShare() {
+    if (typeof Kakao !== 'undefined' && !Kakao.isInitialized()) {
+      Kakao.init('f7ac8407bebdeff853732331eac68898');
+    }
+    var btn = document.getElementById('btn-kakao-share');
+    if (btn) {
+      btn.addEventListener('click', function() {
+        if (typeof Kakao !== 'undefined') {
+          Kakao.Share.sendDefault({
+            objectType: 'feed',
+            content: {
+              title: '장주명 ♡ 박미나 결혼합니다.',
+              imageUrl: 'https://1279wnaud-lang.github.io/wedding-invitation/images/og-main.jpg',
+              imageWidth: 1400,
+              imageHeight: 2100,
+              link: {
+                mobileWebUrl: 'https://1279wnaud-lang.github.io/wedding-invitation/',
+                webUrl: 'https://1279wnaud-lang.github.io/wedding-invitation/'
+              }
+            },
+            buttons: [
+              {
+                title: '모바일 청첩장 보기',
+                link: {
+                  mobileWebUrl: 'https://1279wnaud-lang.github.io/wedding-invitation/',
+                  webUrl: 'https://1279wnaud-lang.github.io/wedding-invitation/'
+                }
+              }
+            ]
+          });
+        }
+      });
+    }
+  }
+
   /* ---------- init ---------- */
   function init() {
     document.documentElement.style.overflow = 'hidden';
@@ -805,6 +851,7 @@
     preventZoom();
     setupWheelScroll();
     setupSoftSnap();
+    setupKakaoShare();
     updateActive();
     updateFades();
 
