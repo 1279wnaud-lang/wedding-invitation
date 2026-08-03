@@ -638,7 +638,7 @@
     layers.forEach(function (l) { l.style.transition = CLIP_T; l.style.opacity = '1'; });
     if (s) s.style.setProperty('--reveal-r', '115%');
 
-    // 2.1s (애니메이션 완료) + 0.35s (감상 시간) 대기 후 잠금 해제 및 이동
+    // 2.1s (애니메이션 완료) + 0.3s (감상 시간) 대기 후 잠금 해제 및 이동
     setTimeout(function() {
       document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
@@ -648,7 +648,7 @@
       if (greeting) {
         greeting.scrollIntoView({ behavior: 'smooth' });
       }
-    }, 2450);
+    }, 2400);
   }
 
   /* ---------- 확대 방지 ---------- */
