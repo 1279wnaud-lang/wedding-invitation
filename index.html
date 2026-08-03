@@ -71,10 +71,10 @@
 </head>
 <body>
 
-<div style="max-width:500px;margin:0 auto;background:#ffffff;min-height:100svh;min-height:calc(var(--vh, 1svh) * 100);position:relative;box-shadow:0 0 60px rgba(0,0,0,0.28);padding-bottom:74px;overflow:hidden;">
+<div style="max-width:500px;margin:0 auto;background:#ffffff;min-height:100vh;min-height:100dvh;position:relative;box-shadow:0 0 60px rgba(0,0,0,0.28);padding-bottom:var(--nav-h, 74px);overflow:hidden;">
 
   <!-- ============ HERO / 메인 포스터 ============ -->
-  <section id="home" style="--reveal-x:37%; --reveal-y:60%; --reveal-r:0px; --reveal-dur:2.1s; --collapse-dur:0.3s; --letter-top:32px; position:relative;height:calc(100svh - 62px);height:var(--avail, calc((var(--vh, 1svh) * 100) - 62px));min-height:420px;background-image:url('images/home-bw.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;overflow:hidden;">
+  <section id="home" style="--reveal-x:37%; --reveal-y:60%; --reveal-r:0px; --reveal-dur:2.1s; --collapse-dur:0.3s; --letter-top:32px; position:relative;height:var(--avail);height:calc(100dvh - var(--nav-h, 62px));min-height:420px;background-image:url('images/home-bw.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;overflow:hidden;">
     <div id="home-bw" style="position:absolute;inset:0;background-image:url('images/home-bw.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;z-index:0;transform:translateZ(0);"></div>
     <div id="home-color" style="position:absolute;inset:0;background-image:url('images/home-color.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;z-index:1;will-change:clip-path;transform:translateZ(0);clip-path:circle(var(--reveal-r,0px) at var(--reveal-x,34%) var(--reveal-y,48%));-webkit-clip-path:circle(var(--reveal-r,0px) at var(--reveal-x,34%) var(--reveal-y,48%));transition:clip-path var(--reveal-dur,2.2s) cubic-bezier(.22,.61,.36,1), -webkit-clip-path var(--reveal-dur,2.2s) cubic-bezier(.22,.61,.36,1);"></div>
 
@@ -293,10 +293,12 @@
 
   /* ---------- 뷰포트 높이 (카카오 인앱 브라우저 대응) ---------- */
   function setVH() {
-    var h = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+    var h = window.innerHeight;
+    if (window.visualViewport && window.visualViewport.height > h) h = window.visualViewport.height;
     document.documentElement.style.setProperty('--vh', (h / 100) + 'px');
     var nav = document.querySelector('nav');
     var navH = nav ? Math.round(nav.getBoundingClientRect().height) : 62;
+    document.documentElement.style.setProperty('--nav-h', navH + 'px');
     document.documentElement.style.setProperty('--avail', (h - navH) + 'px');
   }
 
@@ -649,7 +651,9 @@
     if (window.visualViewport) window.visualViewport.addEventListener('resize', setVH);
 
     setInterval(computeDday, 60 * 60 * 1000);
-    setTimeout(function () { setVH(); updateFades(); }, 300);
+    setTimeout(function () { setVH(); updateFades(); }, 100);
+    setTimeout(function () { setVH(); updateFades(); }, 500);
+    setTimeout(function () { setVH(); updateFades(); }, 1200);
 
     var kick = function () { requestAnimationFrame(function () { requestAnimationFrame(startLettering); }); };
     if (document.fonts && document.fonts.ready) { document.fonts.ready.then(kick); } else { kick(); }
