@@ -57,12 +57,15 @@
   
   #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
   #lightbox.active { opacity: 1; pointer-events: auto; }
-  #lightbox img { max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); user-select: none; transition: transform 0.2s ease; }
-  #lb-close { position: absolute; top: 20px; right: 24px; color: #fff; font-size: 36px; font-weight: 300; cursor: pointer; z-index: 10001; padding: 10px; }
-  .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); color: #fff; font-size: 44px; font-weight: 300; cursor: pointer; z-index: 10001; padding: 20px; user-select: none; }
+  #lightbox-track { position: absolute; inset: 0; display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; z-index: 10000; }
+  #lightbox-track::-webkit-scrollbar { display: none; }
+  #lightbox-track .lb-slide { flex: 0 0 100%; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; scroll-snap-align: center; padding: 20px; box-sizing: border-box; position: relative; }
+  #lightbox-track img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); user-select: none; }
+  #lb-close { position: absolute; top: 20px; right: 24px; color: #fff; font-size: 36px; font-weight: 300; cursor: pointer; z-index: 10002; padding: 10px; }
+  .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); color: #fff; font-size: 44px; font-weight: 300; cursor: pointer; z-index: 10002; padding: 20px; user-select: none; }
   .lb-prev { left: 0; }
   .lb-next { right: 0; }
-  #lb-counter { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 14px; letter-spacing: 2px; z-index: 10001; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+  #lb-counter { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 14px; letter-spacing: 2px; z-index: 10002; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
 </style>
 </head>
 <body>
@@ -167,7 +170,7 @@
   <div id="lightbox">
     <div id="lb-close">×</div>
     <div class="lb-nav lb-prev">‹</div>
-    <img id="lightbox-img" src="" alt="확대 이미지">
+    <div id="lightbox-track"></div>
     <div class="lb-nav lb-next">›</div>
     <div id="lb-counter"></div>
   </div>
@@ -433,38 +436,62 @@
     var lbClose = document.getElementById('lb-close');
     var lbPrev = document.querySelector('.lb-prev');
     var lbNext = document.querySelector('.lb-next');
-    var lbImg = document.getElementById('lightbox-img');
-    if(!lb) return;
+    var track = document.getElementById('lightbox-track');
+    if(!lb || !track) return;
     
-    lb.addEventListener('click', closeLightbox);
+    lb.addEventListener('click', function(e) {
+      if (e.target === lb || e.target === track || e.target.classList.contains('lb-slide')) closeLightbox();
+    });
     if(lbClose) lbClose.addEventListener('click', closeLightbox);
+    
     if(lbPrev) lbPrev.addEventListener('click', function(e) { changeLightboxImage(-1); e.stopPropagation(); });
     if(lbNext) lbNext.addEventListener('click', function(e) { changeLightboxImage(1); e.stopPropagation(); });
-    if(lbImg) lbImg.addEventListener('click', function(e) { e.stopPropagation(); });
     
-    lb.addEventListener('touchstart', function(e) {
-      lbTouchStartX = e.changedTouches[0].screenX;
-    }, {passive: true});
-    
-    lb.addEventListener('touchend', function(e) {
-      lbTouchEndX = e.changedTouches[0].screenX;
-      if(lbTouchEndX < lbTouchStartX - 40) changeLightboxImage(1);
-      if(lbTouchEndX > lbTouchStartX + 40) changeLightboxImage(-1);
+    var scrollTimeout;
+    track.addEventListener('scroll', function() {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(function() {
+        var idx = Math.round(track.scrollLeft / track.offsetWidth);
+        if(idx !== currentLightboxIndex) {
+          currentLightboxIndex = idx;
+          updateLightboxCounter();
+        }
+      }, 50);
     }, {passive: true});
   }
 
   function openLightboxGroup(group) {
     var lb = document.getElementById('lightbox');
-    if (!lb) return;
+    var track = document.getElementById('lightbox-track');
+    if (!lb || !track) return;
     
     currentLightboxGroup = [];
+    track.innerHTML = '';
+    
     for(var i = group.start; i <= group.end; i++) {
-      currentLightboxGroup.push('images/gallery-' + pad2(i) + '.jpg');
+      var src = 'images/gallery-' + pad2(i) + '.jpg';
+      currentLightboxGroup.push(src);
+      
+      var slide = document.createElement('div');
+      slide.className = 'lb-slide';
+      
+      var img = document.createElement('img');
+      img.src = src;
+      img.alt = '확대 이미지';
+      img.addEventListener('click', function(e) { e.stopPropagation(); });
+      
+      slide.appendChild(img);
+      track.appendChild(slide);
     }
     
     currentLightboxIndex = 0;
-    updateLightboxView();
+    updateLightboxCounter();
+    
+    track.style.scrollBehavior = 'auto';
+    track.scrollLeft = 0;
     lb.classList.add('active');
+    
+    setTimeout(function() { track.style.scrollBehavior = 'smooth'; }, 100);
   }
 
   function closeLightbox() {
@@ -473,19 +500,19 @@
   }
 
   function changeLightboxImage(dir) {
-    if(currentLightboxGroup.length === 0) return;
+    var track = document.getElementById('lightbox-track');
+    if(!track || currentLightboxGroup.length === 0) return;
     currentLightboxIndex += dir;
     if (currentLightboxIndex < 0) currentLightboxIndex = currentLightboxGroup.length - 1;
     if (currentLightboxIndex >= currentLightboxGroup.length) currentLightboxIndex = 0;
-    updateLightboxView();
+    track.scrollTo({ left: currentLightboxIndex * track.offsetWidth, behavior: 'smooth' });
+    updateLightboxCounter();
   }
 
-  function updateLightboxView() {
-    var lbImg = document.getElementById('lightbox-img');
+  function updateLightboxCounter() {
     var counter = document.getElementById('lb-counter');
-    if(lbImg && currentLightboxGroup.length > 0) {
-      lbImg.src = currentLightboxGroup[currentLightboxIndex];
-      if(counter) counter.textContent = (currentLightboxIndex + 1) + ' / ' + currentLightboxGroup.length;
+    if(counter && currentLightboxGroup.length > 0) {
+      counter.textContent = (currentLightboxIndex + 1) + ' / ' + currentLightboxGroup.length;
     }
   }
   function updateCounter(idx) {
