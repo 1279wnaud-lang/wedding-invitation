@@ -48,6 +48,16 @@
   /* 빈 사진 자리(갤러리/지도) placeholder */
   .ph-slot { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#a89f95; font-size:13px; background:#ececed; }
   .ph-slot img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+  
+  /* 갤러리 매스너리 & 라이트박스 */
+  #gallery-masonry { column-count: 2; column-gap: 8px; padding: 0 26px; max-width: 500px; margin: 0 auto; width: 100%; }
+  .gallery-item { margin-bottom: 8px; break-inside: avoid; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); cursor: pointer; background: #ececed; position: relative; aspect-ratio: 2/3; }
+  .gallery-item img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s ease; }
+  .gallery-item:active img { transform: scale(0.98); }
+  
+  #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+  #lightbox.active { opacity: 1; pointer-events: auto; }
+  #lightbox img { max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
 </style>
 </head>
 <body>
@@ -140,20 +150,19 @@
     </div>
   </section>
 
-  <!-- ============ 갤러리 슬라이드 ============ -->
+  <!-- ============ 갤러리 매스너리 ============ -->
   <section id="gallery" style="padding:36px 0 24px;background:#f2f2f3;min-height:var(--avail, calc((var(--vh, 1svh) * 100) - 62px));box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;">
-    <div style="text-align:center;margin-bottom:32px;padding:0 26px;">
+    <div style="text-align:center;margin-bottom:24px;padding:0 26px;">
       <div style="font-size:11px;letter-spacing:0.34em;color:#7c1d2a;font-weight:700;">GALLERY</div>
       <div style="font-size:20px;font-weight:800;color:#1b1714;margin-top:8px;">우리의 순간</div>
     </div>
-    <div id="gallery-track" style="display:flex;align-items:flex-start;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scrollbar-width:none;gap:0;padding:0 26px;"></div>
-    <div style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:20px;">
-      <span id="gallery-counter-cur" style="font-size:15px;font-weight:800;color:#7c1d2a;letter-spacing:0.04em;">01</span>
-      <span style="font-size:12px;color:#c9c0b6;">/</span>
-      <span id="gallery-counter-total" style="font-size:12px;color:#a89f95;letter-spacing:0.04em;">30</span>
-    </div>
-    <div style="text-align:center;margin-top:10px;font-size:12px;color:#a89f95;">← 좌우로 넘겨보세요 →</div>
+    <div id="gallery-masonry"></div>
   </section>
+
+  <!-- 라이트박스 -->
+  <div id="lightbox" onclick="this.classList.remove('active')">
+    <img id="lightbox-img" src="" alt="확대 이미지" onclick="event.stopPropagation()">
+  </div>
 
   <!-- ============ 오시는 길 / 지도 ============ -->
   <section id="location" style="padding:36px 26px 80px;background:#ffffff;">
@@ -369,42 +378,54 @@
     });
   }
 
-  /* ---------- 갤러리 도트 ---------- */
-  var GALLERY_TOTAL = 29;
+  /* ---------- 갤러리 매스너리 ---------- */
+  var GALLERY_IMGS = [
+    'gallery-01.jpg', 'gallery-02.jpg', 'gallery-04.jpg', 
+    'gallery-08.jpg', 'gallery-09.jpg', 'gallery-13.jpg', 
+    'gallery-14.jpg', 'gallery-16.jpg', 'gallery-19.jpg', 
+    'gallery-21.jpg', 'gallery-22.jpg', 'gallery-23.jpg', 
+    'gallery-27.jpg', 'gallery-29.jpg', 'gallery-30.jpg'
+  ];
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
   function buildGallery() {
-    var track = document.getElementById('gallery-track');
-    if (!track) return;
-    track.innerHTML = '';
-    for (var i = 1; i <= GALLERY_TOTAL; i++) {
-      var slide = document.createElement('div');
-      slide.style.cssText = 'flex:0 0 100%;scroll-snap-align:center;';
-      var frame = document.createElement('div');
-      frame.style.cssText = 'height:clamp(240px,60svh,540px);max-height:calc(var(--avail, 100svh) - 196px);aspect-ratio:3/4;width:auto;max-width:100%;margin:0 auto;border-radius:3px;overflow:hidden;background:#ececed;position:relative;';
+    var masonry = document.getElementById('gallery-masonry');
+    if (!masonry) return;
+    masonry.innerHTML = '';
+    GALLERY_IMGS.forEach(function (filename, idx) {
+      var item = document.createElement('div');
+      item.className = 'gallery-item';
+      
       var ph = document.createElement('div');
       ph.className = 'ph-slot';
-      ph.textContent = pad2(i);
+      ph.textContent = pad2(idx + 1);
       ph.style.fontSize = '15px';
       ph.style.color = '#c9c0b6';
       ph.style.fontWeight = '700';
+
       var img = document.createElement('img');
-      img.src = 'images/gallery-' + pad2(i) + '.jpg';
-      img.alt = '갤러리 ' + pad2(i);
-      img.setAttribute('loading', i === 1 ? 'eager' : 'lazy');
-      img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;';
+      img.src = 'images/' + filename;
+      img.alt = '갤러리 ' + pad2(idx + 1);
+      img.setAttribute('loading', 'lazy');
+      
+      // 라이트박스 열기 이벤트
+      item.addEventListener('click', function() {
+        var lb = document.getElementById('lightbox');
+        var lbImg = document.getElementById('lightbox-img');
+        if (lb && lbImg) {
+          lbImg.src = img.src;
+          lb.classList.add('active');
+        }
+      });
+      
       img.addEventListener('error', function () { this.style.display = 'none'; });
-      frame.appendChild(ph);
-      frame.appendChild(img);
-      slide.appendChild(frame);
-      track.appendChild(slide);
-    }
-    var total = document.getElementById('gallery-counter-total');
-    if (total) total.textContent = pad2(GALLERY_TOTAL);
-    updateCounter(0);
+      
+      item.appendChild(ph);
+      item.appendChild(img);
+      masonry.appendChild(item);
+    });
   }
   function updateCounter(idx) {
-    var cur = document.getElementById('gallery-counter-cur');
-    if (cur) cur.textContent = pad2(Math.min(GALLERY_TOTAL, Math.max(1, idx + 1)));
+    // 사용 안 함 (이전 스크롤 연동 방지용 더미)
   }
 
   /* ---------- 계좌 ---------- */
@@ -548,10 +569,7 @@
 
     var track = document.getElementById('gallery-track');
     if (track) {
-      track.addEventListener('scroll', function () {
-        var i = Math.round(track.scrollLeft / track.clientWidth);
-        updateCounter(i);
-      }, { passive: true });
+      // 삭제됨
     }
 
     window.addEventListener('scroll', function () { updateActive(); updateFades(); }, { passive: true });
