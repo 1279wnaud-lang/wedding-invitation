@@ -164,11 +164,11 @@
   </section>
 
   <!-- 라이트박스 -->
-  <div id="lightbox" onclick="closeLightbox()" ontouchstart="lbTouchStartX=event.changedTouches[0].screenX" ontouchend="lbTouchEndX=event.changedTouches[0].screenX; if(lbTouchEndX < lbTouchStartX - 40) changeLightboxImage(1); if(lbTouchEndX > lbTouchStartX + 40) changeLightboxImage(-1);">
-    <div id="lb-close" onclick="closeLightbox()">×</div>
-    <div class="lb-nav lb-prev" onclick="changeLightboxImage(-1); event.stopPropagation();">‹</div>
-    <img id="lightbox-img" src="" alt="확대 이미지" onclick="event.stopPropagation()">
-    <div class="lb-nav lb-next" onclick="changeLightboxImage(1); event.stopPropagation();">›</div>
+  <div id="lightbox">
+    <div id="lb-close">×</div>
+    <div class="lb-nav lb-prev">‹</div>
+    <img id="lightbox-img" src="" alt="확대 이미지">
+    <div class="lb-nav lb-next">›</div>
     <div id="lb-counter"></div>
   </div>
 
@@ -389,7 +389,7 @@
   /* ---------- 갤러리 4구역 그룹핑 ---------- */
   var GALLERY_GROUPS = [
     { thumb: 'gallery-01.jpg', start: 1, end: 8 },
-    { thumb: 'gallery-09.jpg', start: 9, end: 16 },
+    { thumb: 'gallery-14.jpg', start: 9, end: 16 },
     { thumb: 'gallery-19.jpg', start: 17, end: 22 },
     { thumb: 'gallery-30.jpg', start: 23, end: 30 }
   ];
@@ -426,6 +426,31 @@
       item.appendChild(img);
       masonry.appendChild(item);
     });
+  }
+
+  function setupLightboxEvents() {
+    var lb = document.getElementById('lightbox');
+    var lbClose = document.getElementById('lb-close');
+    var lbPrev = document.querySelector('.lb-prev');
+    var lbNext = document.querySelector('.lb-next');
+    var lbImg = document.getElementById('lightbox-img');
+    if(!lb) return;
+    
+    lb.addEventListener('click', closeLightbox);
+    if(lbClose) lbClose.addEventListener('click', closeLightbox);
+    if(lbPrev) lbPrev.addEventListener('click', function(e) { changeLightboxImage(-1); e.stopPropagation(); });
+    if(lbNext) lbNext.addEventListener('click', function(e) { changeLightboxImage(1); e.stopPropagation(); });
+    if(lbImg) lbImg.addEventListener('click', function(e) { e.stopPropagation(); });
+    
+    lb.addEventListener('touchstart', function(e) {
+      lbTouchStartX = e.changedTouches[0].screenX;
+    }, {passive: true});
+    
+    lb.addEventListener('touchend', function(e) {
+      lbTouchEndX = e.changedTouches[0].screenX;
+      if(lbTouchEndX < lbTouchStartX - 40) changeLightboxImage(1);
+      if(lbTouchEndX > lbTouchStartX + 40) changeLightboxImage(-1);
+    }, {passive: true});
   }
 
   function openLightboxGroup(group) {
@@ -564,6 +589,7 @@
     computeDday();
     buildTabs();
     buildGallery();
+    setupLightboxEvents();
     buildAccounts();
     preventZoom();
     updateActive();
