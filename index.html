@@ -204,6 +204,10 @@
           }).render();
         }, 100);
       </script>
+      <!-- 스크롤 간섭 방지용 투명 덮개 -->
+      <div onclick="this.style.pointerEvents='none'; this.style.opacity='0';" style="position:absolute;inset:0;background:rgba(255,255,255,0.1);z-index:10;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity 0.3s ease;">
+        <div style="background:rgba(27,23,20,0.85);color:#fff;font-size:13px;font-weight:700;padding:10px 20px;border-radius:30px;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.15);letter-spacing:0.3px;">👆 터치하여 지도 조작하기</div>
+      </div>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px;">
