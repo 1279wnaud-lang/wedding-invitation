@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  @font-face { font-family: 'SUIT'; src: url('assets/SUIT-Variable.ttf') format('truetype'); font-weight: 100 900; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Corinthia'; src: url('assets/Corinthia-Regular.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Authentic Birthday'; src: url('assets/AuthenticBirthday.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Playball'; src: url('assets/Playball-Regular.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
+  :root { --font-script: 'Corinthia', cursive; --font-body: 'SUIT', -apple-system, BlinkMacSystemFont, sans-serif; }
+  body { background: #e9e9eb; font-family: var(--font-body); color: #1b1714; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior-y: none; }
+  img { -webkit-user-drag: none; user-drag: none; }
+  a { color: #7c1d2a; text-decoration: none; }
+  a:hover { color: #5c1420; }
+  @keyframes drawIn { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+  @keyframes hintBlink { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
+  .ph-slot { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#a89f95; font-size:13px; background:#ececed; }
+  .ph-slot img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+</style>
+</helmet>
+
+<div style="max-width:500px;margin:0 auto;background:#ffffff;min-height:100svh;min-height:calc(var(--vh, 1svh) * 100);position:relative;box-shadow:0 0 60px rgba(0,0,0,0.28);padding-bottom:74px;overflow:hidden;">
+
+  <section id="home" style="--reveal-x:37%; --reveal-y:60%; --reveal-r:0px; --reveal-dur:2.1s; --collapse-dur:0.3s; --letter-top:32px; position:relative;height:calc(100svh - 62px);height:var(--avail, calc((var(--vh, 1svh) * 100) - 62px));min-height:420px;background-image:url('images/home-bw.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;overflow:hidden;">
+    <div id="home-bw" style="position:absolute;inset:0;background-image:url('images/home-bw.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;z-index:0;transform:translateZ(0);"></div>
+    <div id="home-color" style="position:absolute;inset:0;background-image:url('images/home-color.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;z-index:1;will-change:clip-path;transform:translateZ(0);clip-path:circle(var(--reveal-r,0px) at var(--reveal-x,34%) var(--reveal-y,48%));-webkit-clip-path:circle(var(--reveal-r,0px) at var(--reveal-x,34%) var(--reveal-y,48%));transition:clip-path var(--reveal-dur,2.2s) cubic-bezier(.22,.61,.36,1), -webkit-clip-path var(--reveal-dur,2.2s) cubic-bezier(.22,.61,.36,1);"></div>
+
+    <div style="position: absolute; top: var(--letter-top, 20px); left: 0; right: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 24px">
+      <div id="lettering" style="font-family: var(--font-script); color: #c1121f; line-height: 1.18; padding: 12px 0; text-shadow: 0 2px 14px rgba(246,242,236,0.65); display: flex; flex-direction: column; align-items: center; opacity: 0; transition: opacity .35s ease;">
+        <div style="font-family: 'Authentic Birthday',cursive; font-size: clamp(50px, 19cqw, 90px); animation: drawIn 0.8s linear both; animation-play-state: paused; width: 288px; height: 85px; color: #FFFFFF; position: static">Welcome</div><div style="font-family: 'Authentic Birthday',cursive; font-size: clamp(42px, 15cqw, 70px); margin-top: 2px; animation: drawIn 0.8s linear 0.8s both; animation-play-state: paused; width: 411px; height: 87px; color: #FFFFFF">to our wedding</div><div style="font-size: clamp(24px, 8.5cqw, 42px); margin-top: 2px; animation: drawIn 0.8s linear 1.6s both; animation-play-state: paused; width: 163px; color: #FFFFFF">2026 . 11 . 22</div>
+      </div>
+    </div>
+    <div id="lettering-color-layer" style="position:absolute;inset:0;z-index:4;pointer-events:none;clip-path:circle(var(--reveal-r,0px) at var(--reveal-x,37%) var(--reveal-y,60%));-webkit-clip-path:circle(var(--reveal-r,0px) at var(--reveal-x,28%) var(--reveal-y,62%));transition:clip-path var(--reveal-dur,2.1s) cubic-bezier(.22,.61,.36,1), -webkit-clip-path var(--reveal-dur,2.1s) cubic-bezier(.22,.61,.36,1);">
+      <div style="position: absolute; top: var(--letter-top, 20px); left: 0; right: 0; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 24px">
+        <div style="font-family: var(--font-script); color: #A80505; line-height: 1.18; padding: 12px 0; text-shadow: 0 2px 14px rgba(246,242,236,0.65); display: flex; flex-direction: column; align-items: center;">
+          <div style="font-family: 'Authentic Birthday',cursive; font-size: clamp(50px, 19cqw, 90px); width: 288px; height: 85px; color: #A80505; position: static">Welcome</div><div style="font-family: 'Authentic Birthday',cursive; font-size: clamp(42px, 15cqw, 70px); margin-top: 2px; width: 411px; height: 87px; color: #A80505">to our wedding</div><div style="font-size: clamp(24px, 8.5cqw, 42px); margin-top: 2px; width: 163px; color: #A80505">2026 . 11 . 22</div>
+        </div>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:0;left:0;right:0;z-index:3;display:flex;flex-direction:column;align-items:center;padding-bottom:96px;">
+      <div id="reveal-hint" style="font-family:var(--font-body);font-size:12px;letter-spacing:0.08em;color:#5A0200;margin-bottom:14px;opacity:0;animation:hintBlink 1.8s ease-in-out infinite;animation-play-state:paused;">화면을 터치해 보세요</div>
+      <div style="animation:bob 1.8s ease-in-out infinite;display:flex;justify-content:center;"><div style="width:26px;height:26px;border-right:2px solid #241f1b;border-bottom:2px solid #241f1b;transform:rotate(45deg);"></div></div>
+    </div>
+  </section>
+
+  <section style="padding:78px 30px 70px;text-align:center;background:#ffffff;">
+    <div id="invite-profiles" style="margin-top:34px;">
+      <div style="font-size:11px;letter-spacing:0.34em;color:#7c1d2a;font-weight:700;"></div>
+      <div style="font-size: 20px; font-weight: 800; color: #7C1D2A; margin-top: 8px; margin-bottom: 30px">신랑 &amp; 신부</div>
+      <div style="display:grid;align-items:start;grid-template-columns:1fr 1fr;gap:16px;">
+        <div style="text-align:center;">
+          <div style="width:100%;aspect-ratio:3/4;border-radius:3px;overflow:hidden;background:#ececed;position:relative;">
+            <img src="images/groom.jpg" alt="장주명" loading="eager" width="300" height="400" style="--groom-shift-x: -5%; --groom-zoom: 1.08; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; transform: scale(var(--groom-zoom)) translateX(var(--groom-shift-x)); display: block; left: 4px; top: 0px">
+          </div>
+          <div style="margin-top:16px;font-size:11px;letter-spacing:0.24em;color:#7c1d2a;font-weight:700;">GROOM</div>
+          <div style="font-size:18px;font-weight:800;color:#1b1714;margin-top:4px;">장주명</div>
+          <div style="font-size:12.5px;color:#8a827b;margin-top:6px;line-height:1.5;">장근 · 지우분<br>의 아들</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="width:100%;aspect-ratio:3/4;border-radius:3px;overflow:hidden;background:#ececed;position:relative;">
+            <img class="cf-solo" src="images/bride.jpg" alt="박미나" loading="eager" width="300" height="400" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block;">
+          </div>
+          <div style="margin-top:16px;font-size:11px;letter-spacing:0.24em;color:#7c1d2a;font-weight:700;">BRIDE</div>
+          <div style="font-size:18px;font-weight:800;color:#1b1714;margin-top:4px;">박미나</div>
+          <div style="font-size:12.5px;color:#8a827b;margin-top:6px;line-height:1.5;">박영순 · 권용희<br>의 딸</div>
+        </div>
+      </div>
+    </div>
+    <div style="width:34px;height:1px;background:#dcdce0;margin:20px auto 34px;"></div>
+    <div style="font-family:var(--font-body); font-size: 20px; color: #7C1D2A; line-height: 1"><b>소중한 분들을 초대합니다.</b></div>
+    <p style="margin-top: 44px; font-size: 15.5px; line-height: 2.15; color: #3d362f; letter-spacing: 0.01em; word-break: keep-all; font-family:var(--font-body)">
+      서로 다른 길을 걷던 두 사람이<br>
+      이제 같은 곳을 바라보며<br>
+      하나의 길을 함께 걷고자 합니다.<br><br>
+      귀한 걸음 하시어<br>
+      새로운 시작을 축복해 주시면<br>
+      더없는 기쁨으로 간직하겠습니다.
+    </p>
+  </section>
+
+  <section id="calendar" style="padding: 34px 30px 92px; color: #f6f2ec; text-align: center; min-height: var(--avail, calc((var(--vh, 1svh) * 100) - 62px)); box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; background-color: #241D1B">
+    <div style="font-size:11px;letter-spacing:0.34em;color:#c98a92;font-weight:700;">SAVE THE DATE</div>
+    <div style="font-family: Playball; font-size: 50px; color: #f6f2ec; line-height: 1; margin: 8px 0 4px">November</div>
+    <div style="font-size: 14px; letter-spacing: 0.05em; color: #E4DFD9">2026년 11월 22일 · 일요일 오후 3시</div>
+
+    <div style="margin: 16px auto 0; max-width: 320px; width: 326px; border-top: 1px solid #3a332e; border-bottom: 1px solid #3a332e; padding: 12px 4px; height: 250px">
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);font-size:12px;font-weight:700;letter-spacing:0.02em;margin-bottom:8px;">
+        <span style="color:#d98e96;">일</span><span style="color:#b8b0a6;">월</span><span style="color:#b8b0a6;">화</span><span style="color:#b8b0a6;">수</span><span style="color:#b8b0a6;">목</span><span style="color:#b8b0a6;">금</span><span style="color:#9aa2c9;">토</span>
+      </div>
+      <div id="calendar-body"></div>
+    </div>
+
+    <div style="margin-top:16px;font-size:14px;color:#e7dfd4;line-height:1.6;">
+      <div style="font-weight:700;">웨딩그룹위더스 안양</div>
+      <div style="color:#b8b0a6;font-size:13px;">9F 메리엘</div>
+    </div>
+
+    <div style="margin-top: 18px; border-top: 1px solid #3a332e; padding-top: 50px; display:flex; flex-direction:column; align-items:center; gap:14px;">
+      <div style="font-size:11px;letter-spacing:0.34em;color:#c98a92;font-weight:700;">D-DAY</div>
+      <div id="dday-big" style="font-family: Playball; font-size: 40px; color: #c1121f; line-height: 1.05; margin: 0">D-DAY</div>
+      <div id="dday-sentence" style="font-size: 13px; color: #E8E6E4; padding-bottom: 10px; padding-top: 10px"></div>
+    </div>
+  </section>
+
+  <section id="gallery" style="padding:36px 0 24px;background:#f2f2f3;min-height:var(--avail, calc((var(--vh, 1svh) * 100) - 62px));box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;">
+    <div style="text-align:center;margin-bottom:32px;padding:0 26px;">
+      <div style="font-size:11px;letter-spacing:0.34em;color:#7c1d2a;font-weight:700;">GALLERY</div>
+      <div style="font-size:20px;font-weight:800;color:#1b1714;margin-top:8px;">우리의 순간</div>
+    </div>
+    <div id="gallery-track" style="display:flex;align-items:flex-start;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scrollbar-width:none;gap:0;padding:0 26px;"></div>
+    <div style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:20px;font-family:var(--font-body);">
+      <span id="gallery-counter-cur" style="font-size:15px;font-weight:800;color:#7c1d2a;letter-spacing:0.04em;">01</span>
+      <span style="font-size:12px;color:#c9c0b6;">/</span>
+      <span id="gallery-counter-total" style="font-size:12px;color:#a89f95;letter-spacing:0.04em;">30</span>
+    </div>
+    <div style="text-align:center;margin-top:10px;font-size:12px;color:#a89f95;">← 좌우로 넘겨보세요 →</div>
+  </section>
+
+  <section id="location" style="padding:36px 26px 80px;background:#ffffff;">
+    <div style="text-align:center;margin-bottom:26px;">
+      <div style="font-size:11px;letter-spacing:0.34em;color:#7c1d2a;font-weight:700;">LOCATION</div>
+      <div style="font-size:20px;font-weight:800;color:#1b1714;margin-top:8px;">오시는 길</div>
+    </div>
+    <div style="text-align:center;margin-bottom:20px;line-height:1.6;">
+      <div style="font-size:16px;font-weight:800;color:#1b1714;">웨딩그룹위더스 안양 <span style="font-weight:700;color:#7c1d2a;">9F 메리엘</span></div>
+      <div style="font-size:13.5px;color:#6a625a;margin-top:6px;">경기 안양시 만안구 안양로 104</div>
+    </div>
+
+    <div style="width:100%;aspect-ratio:4/3;border-radius:3px;overflow:hidden;background:#ececed;position:relative;">
+      <div class="ph-slot">지도 캡처 이미지를 넣어주세요</div>
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);pointer-events:none;display:flex;flex-direction:column;align-items:center;">
+        <div style="width:26px;height:26px;border-radius:50% 50% 50% 0;background:#c1121f;transform:rotate(-45deg);box-shadow:0 4px 10px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;">
+          <span style="width:9px;height:9px;border-radius:50%;background:#fff;transform:rotate(45deg);"></span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px;">
+      <a href="https://map.kakao.com/link/search/경기%20안양시%20만안구%20안양로%20104" target="_blank" rel="noopener" style="text-align:center;padding:13px 0;border:1px solid #e6e6e8;border-radius:2px;background:#fff;font-size:13px;font-weight:700;color:#1b1714;">카카오맵</a>
+      <a href="https://map.naver.com/v5/search/웨딩그룹위더스%20안양" target="_blank" rel="noopener" style="text-align:center;padding:13px 0;border:1px solid #e6e6e8;border-radius:2px;background:#fff;font-size:13px;font-weight:700;color:#1b1714;">네이버지도</a>
+      <a href="tmap://search?name=웨딩그룹위더스%20안양" style="text-align:center;padding:13px 0;border:1px solid #e6e6e8;border-radius:2px;background:#fff;font-size:13px;font-weight:700;color:#1b1714;">T맵</a>
+    </div>
+
+    <div style="margin-top:32px;display:flex;flex-direction:column;gap:22px;">
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="width:6px;height:6px;background:#7c1d2a;border-radius:50%;"></span><span style="font-size:14px;font-weight:800;color:#1b1714;">지하철</span></div>
+        <div style="font-size:13.5px;color:#4d453e;line-height:1.7;padding-left:16px;">1호선 <b style="color:#1b1714;">명학역</b> 하차<br>1번 출구 도보 이용 (2분 거리)</div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="width:6px;height:6px;background:#7c1d2a;border-radius:50%;"></span><span style="font-size:14px;font-weight:800;color:#1b1714;">버스</span></div>
+        <div style="font-size:13.5px;color:#4d453e;line-height:1.75;padding-left:16px;">
+          <b style="color:#1b1714;">성결대학 · 안양아트센터 · 명학역</b> 정류장 하차<br>
+          <span style="color:#2a6fdb;font-weight:700;">간선</span> 541<br>
+          <span style="color:#1f8a5b;font-weight:700;">지선</span> 5530, 5531, 5623<br>
+          <span style="color:#c1121f;font-weight:700;">직행좌석</span> 333, 1303, 3330<br>
+          <span style="color:#8a827b;font-weight:700;">일반</span> 1, 1-2, 5, 8-2, 11-2, 15, 15-2, 20, 31-7, 32, 64, 88, 350<br>
+          <span style="color:#8a827b;font-weight:700;">마을</span> 10-1, 10-2
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><span style="width:6px;height:6px;background:#7c1d2a;border-radius:50%;"></span><span style="font-size:14px;font-weight:800;color:#1b1714;">네비게이션</span></div>
+        <div style="font-size:13.5px;color:#4d453e;line-height:1.7;padding-left:16px;"><b style="color: #1B1714">안양 만안구 안양로 104&nbsp;</b>또는 <b style="color: #1B1714">안양 만안구 안양동 534-1</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="account" style="padding:48px 26px 70px;background:#f2f2f3;min-height:100svh;min-height:100lvh;box-sizing:border-box;">
+    <div style="text-align:center;margin-bottom:14px;">
+      <div style="font-size:11px;letter-spacing:0.34em;color:#7c1d2a;font-weight:700;">GIVE A HEART</div>
+      <div style="font-size:20px;font-weight:800;color:#1b1714;margin-top:8px;">마음 전하실 곳</div>
+    </div>
+    <p style="text-align:center;font-size:13.5px;color:#6a625a;line-height:1.8;margin:0 0 26px;word-break:keep-all;">
+      참석이 어려우신 분들을 위해<br>계좌번호를 안내드립니다.<br>따뜻한 마음에 깊이 감사드립니다.
+    </p>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="border:1px solid #e6e6e8;border-radius:3px;background:#ffffff;overflow:hidden;">
+        <button data-acc="groom" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:17px 20px;background:none;border:none;cursor:pointer;font-family:var(--font-body);">
+          <span style="font-size:15px;font-weight:800;color:#1b1714;">신랑측 마음 전하기</span>
+          <span class="acc-arrow" style="font-size:12px;color:#7c1d2a;transition:transform .25s;">▾</span>
+        </button>
+        <div class="acc-panel" data-panel="groom" style="display:none;padding:2px 16px 14px;flex-direction:column;gap:8px;"></div>
+      </div>
+
+      <div style="border:1px solid #e6e6e8;border-radius:3px;background:#ffffff;overflow:hidden;">
+        <button data-acc="bride" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:17px 20px;background:none;border:none;cursor:pointer;font-family:var(--font-body);">
+          <span style="font-size:15px;font-weight:800;color:#1b1714;">신부측 마음 전하기</span>
+          <span class="acc-arrow" style="font-size:12px;color:#7c1d2a;transition:transform .25s;">▾</span>
+        </button>
+        <div class="acc-panel" data-panel="bride" style="display:none;padding:2px 16px 14px;flex-direction:column;gap:8px;"></div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;font-size:11.5px;color:#a89f95;text-align:center;">* 예시 계좌입니다. 실제 계좌번호로 교체해 주세요.</div>
+
+    <div style="margin-top:40px;border:1px solid #e6e6e8;border-radius:3px;padding:24px 20px;text-align:center;background:#ffffff;">
+      <div style="font-size:14px;font-weight:800;color:#1b1714;">🌸 화환은 정중히 사양합니다</div>
+      <div style="font-size:13px;color:#6a625a;margin-top:8px;line-height:1.7;">축하해 주시는 따뜻한 마음만<br>감사히 받겠습니다.</div>
+    </div>
+  </section>
+
+  <section style="padding:60px 26px 54px;background:#1b1714;color:#f6f2ec;text-align:center;">
+    <div style="font-family:var(--font-script);font-size:34px;color:#c98a92;line-height:1;">Thank you</div>
+    <div style="font-size:14px;color:#cfc7bd;margin-top:18px;line-height:1.8;">저희의 시작을 함께해 주셔서<br>진심으로 감사합니다.</div>
+    <div style="margin-top:24px;font-size:15px;font-weight:800;letter-spacing:0.04em;">장주명 &nbsp;·&nbsp; 박미나</div>
+    <div style="margin-top:6px;font-size:12px;color:#8a827b;">2026. 11. 22. SUN</div>
+  </section>
+
+  <nav id="tabbar" style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:#ffffff;border-top:1px solid #ececed;display:flex;padding:11px 4px calc(9px + env(safe-area-inset-bottom));z-index:50;user-select:none;"></nav>
+
+  <div id="toast" style="position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:rgba(27,23,20,0.92);color:#f6f2ec;font-size:13px;padding:11px 20px;border-radius:100px;z-index:60;pointer-events:none;opacity:0;transition:opacity .3s;white-space:nowrap;">계좌번호가 복사되었어요</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  componentDidMount() {
+    const root = this.rootEl || document;
+    const $ = (sel) => root.querySelector(sel);
+    const $id = (id) => root.querySelector('#' + id);
+
+    function setVH() {
+      var h = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+      document.documentElement.style.setProperty('--vh', (h / 100) + 'px');
+      var nav = $id('tabbar');
+      var navH = nav ? Math.round(nav.getBoundingClientRect().height) : 62;
+      document.documentElement.style.setProperty('--avail', (h - navH) + 'px');
+    }
+
+    function buildCalendar() {
+      var body = $id('calendar-body');
+      if (!body) return;
+      var dim = 30, day = 1, html = '';
+      for (var w = 0; w < 5; w++) {
+        html += '<div style="display:grid;grid-template-columns:repeat(7,1fr);">';
+        for (var dow = 0; dow < 7; dow++) {
+          html += '<div style="height:38px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#cfc7bd;">';
+          if (day <= dim) {
+            if (day === 22) {
+              html += '<span style="width:30px;height:30px;border-radius:50%;background:#c1121f;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;">22</span>';
+            } else {
+              html += '<span>' + day + '</span>';
+            }
+            day++;
+          }
+          html += '</div>';
+        }
+        html += '</div>';
+      }
+      body.innerHTML = html;
+    }
+
+    function computeDday() {
+      var now = new Date();
+      var startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      var targetDay = new Date(2026, 10, 22);
+      var d = Math.round((targetDay - startOfDay) / 86400000);
+      var big = d > 0 ? ('D-' + d) : (d === 0 ? 'D-DAY' : 'Married');
+      var sentence = d > 0
+        ? ('장주명 ♥ 박미나의 결혼식이 ' + d + '일 남았습니다')
+        : (d === 0 ? '오늘, 저희 두 사람이 부부가 됩니다' : '저희 두 사람, 부부가 되었습니다');
+      var b = $id('dday-big'), s = $id('dday-sentence');
+      if (b) b.textContent = big;
+      if (s) s.textContent = sentence;
+    }
+
+    var TABS = [
+      { id: 'home', en: 'HOME', ko: '홈' },
+      { id: 'calendar', en: 'WHEN', ko: '날짜' },
+      { id: 'gallery', en: 'GALLERY', ko: '갤러리' },
+      { id: 'location', en: 'WHERE', ko: '오시는길' },
+      { id: 'account', en: 'HEART', ko: '마음' }
+    ];
+    var active = 'home';
+    function buildTabs() {
+      var nav = $id('tabbar');
+      nav.innerHTML = '';
+      TABS.forEach(function (t) {
+        var btn = document.createElement('button');
+        btn.style.cssText = 'flex:1;background:none;border:none;padding:2px 0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;font-family:var(--font-body);';
+        btn.innerHTML =
+          '<span class="tab-en" style="font-size:9px;letter-spacing:0.18em;font-weight:700;transition:color .2s;">' + t.en + '</span>' +
+          '<span class="tab-ko" style="font-size:12px;transition:color .2s;">' + t.ko + '</span>' +
+          '<span class="tab-bar" style="width:16px;height:2px;border-radius:2px;transition:background .2s;"></span>';
+        btn.addEventListener('click', function () { go(t.id); });
+        btn.dataset.id = t.id;
+        nav.appendChild(btn);
+      });
+      paintTabs();
+    }
+    function paintTabs() {
+      var nav = $id('tabbar');
+      Array.prototype.forEach.call(nav.children, function (btn) {
+        var on = btn.dataset.id === active;
+        btn.querySelector('.tab-en').style.color = on ? '#7c1d2a' : '#b3aba2';
+        var ko = btn.querySelector('.tab-ko');
+        ko.style.color = on ? '#7c1d2a' : '#9a9089';
+        ko.style.fontWeight = on ? '700' : '500';
+        btn.querySelector('.tab-bar').style.background = on ? '#7c1d2a' : 'transparent';
+      });
+    }
+    function go(id) {
+      var el = $id(id);
+      if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' });
+    }
+
+    function updateActive() {
+      var ids = ['home', 'calendar', 'gallery', 'location', 'account'];
+      var mark = window.innerHeight * 0.42, cur = 'home';
+      ids.forEach(function (id) {
+        var el = $id(id);
+        if (el && el.getBoundingClientRect().top <= mark) cur = id;
+      });
+      if (cur !== active) { active = cur; paintTabs(); }
+    }
+    function updateFades() {
+      var vh = window.innerHeight;
+      root.querySelectorAll('section').forEach(function (sec) {
+        var r = sec.getBoundingClientRect();
+        var op = Math.max(0, Math.min(1, (r.bottom - vh * 0.35) / (vh * 0.35)));
+        sec.style.opacity = op;
+      });
+    }
+
+    var GALLERY_TOTAL = 30;
+    function pad2(n) { return (n < 10 ? '0' : '') + n; }
+    function buildGallery() {
+      var track = $id('gallery-track');
+      if (!track) return;
+      track.innerHTML = '';
+      for (var i = 1; i <= GALLERY_TOTAL; i++) {
+        var slide = document.createElement('div');
+        slide.style.cssText = 'flex:0 0 100%;scroll-snap-align:center;';
+        var frame = document.createElement('div');
+        frame.style.cssText = 'height:clamp(240px,60svh,540px);max-height:calc(var(--avail, 100svh) - 196px);aspect-ratio:3/4;width:auto;max-width:100%;margin:0 auto;border-radius:3px;overflow:hidden;background:#ececed;position:relative;';
+        var ph = document.createElement('div');
+        ph.className = 'ph-slot';
+        ph.textContent = pad2(i);
+        ph.style.fontSize = '15px';
+        ph.style.color = '#c9c0b6';
+        ph.style.fontWeight = '700';
+        var img = document.createElement('img');
+        img.src = 'images/gallery-' + pad2(i) + '.jpg';
+        img.alt = '갤러리 ' + pad2(i);
+        img.setAttribute('loading', i === 1 ? 'eager' : 'lazy');
+        img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;';
+        img.addEventListener('error', function () { this.style.display = 'none'; });
+        frame.appendChild(ph);
+        frame.appendChild(img);
+        slide.appendChild(frame);
+        track.appendChild(slide);
+      }
+      var total = $id('gallery-counter-total');
+      if (total) total.textContent = pad2(GALLERY_TOTAL);
+      updateCounter(0);
+    }
+    function updateCounter(idx) {
+      var cur = $id('gallery-counter-cur');
+      if (cur) cur.textContent = pad2(Math.min(GALLERY_TOTAL, Math.max(1, idx + 1)));
+    }
+
+    var ACCOUNTS = {
+      groom: [
+        { role: '신랑', name: '장주명', acct: '○○은행 000-0000-0000' },
+        { role: '아버지', name: '장근', acct: '○○은행 000-0000-0000' },
+        { role: '어머니', name: '지우분', acct: '○○은행 000-0000-0000' }
+      ],
+      bride: [
+        { role: '신부', name: '박미나', acct: '○○은행 000-0000-0000' },
+        { role: '아버지', name: '박영순', acct: '○○은행 000-0000-0000' },
+        { role: '어머니', name: '권용희', acct: '○○은행 000-0000-0000' }
+      ]
+    };
+    var toastTimer;
+    function showToast() {
+      var t = $id('toast');
+      t.style.opacity = '1';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { t.style.opacity = '0'; }, 1600);
+    }
+    function copyText(text) {
+      try { if (navigator.clipboard) navigator.clipboard.writeText(text); } catch (e) {}
+      showToast();
+    }
+    function buildAccounts() {
+      ['groom', 'bride'].forEach(function (side) {
+        var panel = root.querySelector('.acc-panel[data-panel="' + side + '"]');
+        panel.innerHTML = '';
+        ACCOUNTS[side].forEach(function (r) {
+          var row = document.createElement('div');
+          row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:#fff;border:1px solid #ececed;border-radius:2px;';
+          row.innerHTML =
+            '<div style="min-width:0;">' +
+              '<div style="font-size:12px;color:#9a9089;"><b style="color:#7c1d2a;">' + r.role + '</b> ' + r.name + '</div>' +
+              '<div style="font-size:13.5px;color:#1b1714;font-weight:700;margin-top:3px;">' + r.acct + '</div>' +
+            '</div>';
+          var btn = document.createElement('button');
+          btn.textContent = '복사';
+          btn.style.cssText = 'flex:none;padding:8px 12px;border:1px solid #dcdce0;border-radius:2px;background:#f2f2f3;font-size:12px;font-weight:700;color:#1b1714;cursor:pointer;font-family:var(--font-body);';
+          btn.addEventListener('click', function () { copyText(r.name + ' ' + r.acct); });
+          row.appendChild(btn);
+          panel.appendChild(row);
+        });
+      });
+      root.querySelectorAll('button[data-acc]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var side = btn.dataset.acc;
+          var panel = root.querySelector('.acc-panel[data-panel="' + side + '"]');
+          var open = panel.style.display !== 'none';
+          panel.style.display = open ? 'none' : 'flex';
+          btn.querySelector('.acc-arrow').style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+        });
+      });
+    }
+
+    var revealArmed = false;
+    function startLettering() {
+      var el = $id('lettering');
+      if (el) {
+        el.style.opacity = '1';
+        el.querySelectorAll('div').forEach(function (d) { d.style.animationPlayState = 'running'; });
+      }
+      setTimeout(armReveal, 2500);
+    }
+    function armReveal() {
+      if (revealArmed) return; revealArmed = true;
+      var s = $id('home');
+      var hint = $id('reveal-hint');
+      var color = $id('home-color');
+      var letterColor = $id('lettering-color-layer');
+      var layers = [color, letterColor].filter(Boolean);
+      var CLIP_T = 'clip-path var(--reveal-dur,2.1s) cubic-bezier(.22,.61,.36,1), -webkit-clip-path var(--reveal-dur,2.1s) cubic-bezier(.22,.61,.36,1)';
+      var FADE_T = 'opacity var(--collapse-dur,0.1s) ease-in-out';
+      if (hint) hint.style.animationPlayState = 'running';
+      var busy = false, fired = false, revealed = false, lastFire = 0, lk;
+      function fire() {
+        var now = Date.now();
+        if (now - lastFire < 600) return;
+        lastFire = now;
+        if (busy || !s || !color) return;
+        busy = true;
+        if (!fired) { fired = true; if (hint) { hint.style.animationPlayState = 'paused'; hint.style.opacity = '0'; } }
+        revealed = !revealed;
+        if (revealed) {
+          layers.forEach(function (l) { l.style.transition = CLIP_T; l.style.opacity = '1'; });
+          s.style.setProperty('--reveal-r', '115%');
+          var done = function (e) { if (e && e.propertyName && e.propertyName.indexOf('clip') === -1) return; color.removeEventListener('transitionend', done); busy = false; };
+          color.addEventListener('transitionend', done);
+          clearTimeout(lk); lk = setTimeout(function () { busy = false; }, 2600);
+        } else {
+          layers.forEach(function (l) { l.style.transition = FADE_T; l.style.opacity = '0'; });
+          var done2 = function (e) {
+            if (e && e.propertyName && e.propertyName !== 'opacity') return;
+            color.removeEventListener('transitionend', done2);
+            layers.forEach(function (l) { l.style.transition = 'none'; });
+            s.style.setProperty('--reveal-r', '0px');
+            layers.forEach(function (l) { void l.offsetWidth; l.style.opacity = '1'; });
+            layers.forEach(function (l) { l.style.transition = CLIP_T; });
+            busy = false;
+          };
+          color.addEventListener('transitionend', done2);
+          clearTimeout(lk); lk = setTimeout(function () { busy = false; }, 400);
+        }
+      }
+      if (s) {
+        s.addEventListener('click', fire);
+        s.addEventListener('pointerdown', fire);
+        s.addEventListener('touchstart', fire, { passive: true });
+      }
+    }
+
+    function preventZoom() {
+      document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
+      document.addEventListener('gesturechange', function (e) { e.preventDefault(); });
+      var last = 0;
+      document.addEventListener('touchend', function (e) {
+        var n = Date.now();
+        if (n - last <= 300) e.preventDefault();
+        last = n;
+      }, { passive: false });
+      document.addEventListener('touchmove', function (e) {
+        if (e.touches && e.touches.length > 1) e.preventDefault();
+      }, { passive: false });
+    }
+
+    function init() {
+      setVH();
+      buildCalendar();
+      computeDday();
+      buildTabs();
+      buildGallery();
+      buildAccounts();
+      preventZoom();
+      updateActive();
+      updateFades();
+
+      var track = $id('gallery-track');
+      if (track) {
+        track.addEventListener('scroll', function () {
+          var i = Math.round(track.scrollLeft / track.clientWidth);
+          updateCounter(i);
+        }, { passive: true });
+      }
+
+      window.addEventListener('scroll', function () { updateActive(); updateFades(); }, { passive: true });
+      window.addEventListener('resize', setVH);
+      window.addEventListener('orientationchange', setVH);
+      if (window.visualViewport) window.visualViewport.addEventListener('resize', setVH);
+
+      setInterval(computeDday, 60 * 60 * 1000);
+      setTimeout(function () { setVH(); updateFades(); }, 300);
+
+      var kick = function () { requestAnimationFrame(function () { requestAnimationFrame(startLettering); }); };
+      if (document.fonts && document.fonts.ready) { document.fonts.ready.then(kick); } else { kick(); }
+    }
+
+    init();
+  }
+}
+</script>
+</body>
+</html>
