@@ -89,11 +89,24 @@
   .intro-fade-up-delay-1 { transition-delay: 0.9s !important; }
   .intro-fade-up-delay-2 { transition-delay: 1.6s !important; }
   .intro-fade-up-delay-3 { transition-delay: 2.3s !important; }
+  .intro-fade-up-delay-4 { transition-delay: 3.0s !important; }
+  @keyframes chevronBounce { 0%, 100% { transform: translateY(0) rotate(45deg); } 50% { transform: translateY(8px) rotate(45deg); } }
+  .chevron-bounce { animation: chevronBounce 1.5s infinite ease-in-out; }
+
+  /* 섹션 겹침 효과 (Sticky Parallax) */
+  section { will-change: transform; }
+  #home { position: sticky; top: 0; z-index: 10; box-shadow: none; }
+  #greeting { position: sticky; top: 0; z-index: 11; min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 -20px 40px rgba(0,0,0,0.12); }
+  #calendar { position: sticky; top: 0; z-index: 12; box-shadow: 0 -20px 40px rgba(0,0,0,0.12); }
+  #gallery { position: relative; z-index: 13; box-shadow: 0 -20px 40px rgba(0,0,0,0.12); }
+  #location { position: sticky; top: 0; z-index: 14; min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 -20px 40px rgba(0,0,0,0.12); }
+  #account { position: sticky; top: 0; z-index: 15; box-shadow: 0 -20px 40px rgba(0,0,0,0.12); }
+  #footer { position: relative; z-index: 16; box-shadow: 0 -20px 40px rgba(0,0,0,0.12); }
 </style>
 </head>
 <body>
 
-<div style="max-width:500px;margin:0 auto;background:#ffffff;min-height:100vh;min-height:100dvh;position:relative;box-shadow:0 0 60px rgba(0,0,0,0.28);padding-bottom:var(--nav-h, 74px);overflow:hidden;">
+<div style="max-width:500px;margin:0 auto;background:#ffffff;min-height:100vh;min-height:100dvh;position:relative;box-shadow:0 0 60px rgba(0,0,0,0.28);padding-bottom:var(--nav-h, 74px);overflow:clip;">
 
   <!-- ============ HERO / 메인 포스터 ============ -->
   <section id="home" style="--reveal-x:37%; --reveal-y:60%; --reveal-r:0px; --reveal-dur:2.1s; --collapse-dur:0.3s; --letter-top:32px; position:relative;height:var(--avail);height:calc(100dvh - var(--nav-h, 62px));min-height:420px;background-image:url('images/home-bw.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;overflow:hidden;">
@@ -149,6 +162,10 @@
       우연처럼 시작된 우리의 인연은<br>
       서로의 가장 특별한 오늘이 되었습니다.<br>
       새로운 출발의 순간에 함께해 주시면<br>감사하겠습니다.
+    </div>
+    <div class="intro-fade-up intro-fade-up-delay-4" style="margin-top: 45px; display: flex; flex-direction: column; align-items: center;">
+      <div style="font-size: 11.5px; letter-spacing: 0.15em; color: #a49c94; margin-bottom: 12px; font-weight: 600;">SCROLL DOWN</div>
+      <div class="chevron-bounce" style="width: 14px; height: 14px; border-bottom: 2px solid #a49c94; border-right: 2px solid #a49c94; transform: rotate(45deg);"></div>
     </div>
   </section>
 
@@ -314,7 +331,7 @@
   </section>
 
   <!-- ============ FOOTER ============ -->
-  <section style="padding:60px 26px 54px;background:#1b1714;color:#f6f2ec;text-align:center;">
+  <section id="footer" style="padding:60px 26px 54px;background:#1b1714;color:#f6f2ec;text-align:center;">
     <div style="font-family:var(--font-script);font-size:34px;color:#c98a92;line-height:1;">Thank you</div>
     <div style="font-size:14px;color:#cfc7bd;margin-top:18px;line-height:1.8;">저희의 시작을 함께해 주셔서<br>진심으로 감사합니다.</div>
     <div style="margin-top:24px;font-size:15px;font-weight:800;letter-spacing:0.04em;">장주명 &nbsp;·&nbsp; 박미나</div>
