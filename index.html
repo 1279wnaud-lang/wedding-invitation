@@ -648,86 +648,9 @@
     document.addEventListener('gesturechange', function (e) { e.preventDefault(); });
   }
 
-  /* ---------- PC Wheel Fullpage ---------- */
-  function setupWheelScroll() {
-    if('ontouchstart' in window || navigator.maxTouchPoints > 0) return;
-    var isWheelScrolling = false;
-    window.addEventListener('wheel', function(e) {
-      if(document.getElementById('lightbox') && document.getElementById('lightbox').classList.contains('active')) return;
-      var sections = Array.from(document.querySelectorAll('section'));
-      if(sections.length === 0) return;
-      e.preventDefault();
-      if(isWheelScrolling) return;
-      var currentIdx = 0, minDistance = Infinity;
-      sections.forEach(function(sec, idx) {
-        var distance = Math.abs(sec.getBoundingClientRect().top);
-        if(distance < minDistance) { minDistance = distance; currentIdx = idx; }
-      });
-      if (e.deltaY > 0) currentIdx++; else currentIdx--;
-      if (currentIdx >= 0 && currentIdx < sections.length) {
-        isWheelScrolling = true;
-        sections[currentIdx].scrollIntoView({ behavior: 'smooth' });
-        setTimeout(function() { isWheelScrolling = false; }, 800);
-      }
-    }, { passive: false });
-  }
 
-  /* ---------- JS Strict Soft Snap ---------- */
-  function setupSoftSnap() {
-    var isTouching = false, startY = 0, startTime = 0, isAutoSnapping = false;
-    document.addEventListener('touchstart', function(e) { 
-      isTouching = true; startY = e.touches[0].clientY; startTime = Date.now();
-    }, {passive: true});
-    
-    function doSnap(targetTop) {
-      if (isAutoSnapping) return;
-      isAutoSnapping = true;
-      window.scrollTo({ top: targetTop, behavior: 'smooth' });
-      setTimeout(function() { isAutoSnapping = false; }, 600);
-    }
 
-    document.addEventListener('touchend', function(e) { 
-      isTouching = false; 
-      if(document.getElementById('lightbox') && document.getElementById('lightbox').classList.contains('active')) return;
-      var endY = e.changedTouches[0].clientY, deltaY = startY - endY, timeDiff = Date.now() - startTime;
-      var vh = window.innerHeight, navH = 74;
-      var isFastSwipe = (timeDiff < 300 && Math.abs(deltaY) > 30), isLongDrag = (Math.abs(deltaY) > vh * 0.15);
-      if (!isFastSwipe && !isLongDrag) { snapToClosest(); return; }
-      var sections = Array.from(document.querySelectorAll('section')), currentIdx = 0, minDistance = Infinity;
-      sections.forEach(function(sec, idx) {
-        var distance = Math.abs(sec.getBoundingClientRect().top);
-        if(distance < minDistance) { minDistance = distance; currentIdx = idx; }
-      });
-      var currentSec = sections[currentIdx], rect = currentSec.getBoundingClientRect();
-      if (rect.height > vh - navH + 10) {
-        if (deltaY > 0 && rect.bottom > vh - navH + 10) return; 
-        if (deltaY < 0 && rect.top < -10) return;
-      }
-      if (deltaY > 0) currentIdx++; else currentIdx--;
-      if (currentIdx < 0) currentIdx = 0;
-      if (currentIdx >= sections.length) currentIdx = sections.length - 1;
-      doSnap(window.scrollY + sections[currentIdx].getBoundingClientRect().top);
-    }, {passive: true});
 
-    var snapTimeout;
-    window.addEventListener('scroll', function() {
-      if (isAutoSnapping) return;
-      clearTimeout(snapTimeout);
-      snapTimeout = setTimeout(function() { if(!isTouching && !isAutoSnapping) snapToClosest(); }, 150);
-    }, { passive: true });
-
-    function snapToClosest() {
-      if(document.getElementById('lightbox') && document.getElementById('lightbox').classList.contains('active')) return;
-      var sections = Array.from(document.querySelectorAll('section')), vh = window.innerHeight, snapTarget = -1, minDistance = Infinity;
-      sections.forEach(function(sec) {
-        var rect = sec.getBoundingClientRect();
-        if(rect.height > vh + 10 && rect.top < -10 && rect.bottom > vh + 10) return;
-        var distTop = Math.abs(rect.top);
-        if(distTop < vh * 0.35 && distTop < minDistance) { minDistance = distTop; snapTarget = window.scrollY + rect.top; }
-      });
-      if(snapTarget !== -1 && minDistance > 2) doSnap(snapTarget);
-    }
-  }
 
   /* ---------- Kakao Share API ---------- */
   function setupKakaoShare() {
@@ -758,8 +681,6 @@
     setupLightboxEvents();
     buildAccounts();
     preventZoom();
-    setupWheelScroll();
-    setupSoftSnap();
     setupKakaoShare();
     setupFades();
     updateActive();
