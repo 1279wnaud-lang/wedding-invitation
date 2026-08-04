@@ -702,7 +702,7 @@
         var startY = window.scrollY;
         var targetY = greeting.getBoundingClientRect().top + startY;
         var dist = targetY - startY;
-        var dur = 400; // 자동스크롤 속도 400ms로 복원
+        var dur = 350; // 자동스크롤 속도 350ms로 수정
         var startT = null;
         function anim(t) {
           if (!startT) startT = t;
@@ -717,7 +717,7 @@
         }
         requestAnimationFrame(anim);
       }
-    }, 2250);
+    }, 1850);
   }
 
   /* ---------- 확대 방지 ---------- */
