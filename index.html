@@ -436,20 +436,41 @@
       btn.querySelector('.tab-bar').style.background = on ? '#7c1d2a' : 'transparent';
     });
   }
+
   function go(id) {
     var el = document.getElementById(id);
-    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY, behavior: 'smooth' });
+    if (!el) return;
+    var start = window.scrollY;
+    var target = el.getBoundingClientRect().top + start;
+    var duration = 500;
+    var startTime = null;
+    function animate(currentTime) {
+      if (!startTime) startTime = currentTime;
+      var elapsed = currentTime - startTime;
+      var progress = Math.min(elapsed / duration, 1);
+      var ease = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+      window.scrollTo(0, start + (target - start) * ease);
+      if (elapsed < duration) requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
   }
 
-  /* ---------- 스크롤: 활성 탭 ---------- */
-  function updateActive() {
+  /* ---------- 탭바 상태 업데이트 (IntersectionObserver로 스크롤 성능 개선) ---------- */
+  function setupTabObserver() {
+    if (!window.IntersectionObserver) return;
     var ids = ['greeting', 'calendar', 'gallery', 'location', 'account'];
-    var mark = window.innerHeight * 0.42, cur = 'greeting';
-    ids.forEach(function (id) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting && entry.target.id !== active) {
+          active = entry.target.id;
+          paintTabs();
+        }
+      });
+    }, { rootMargin: '-40% 0px -50% 0px' });
+    ids.forEach(function(id) {
       var el = document.getElementById(id);
-      if (el && el.getBoundingClientRect().top <= mark) cur = id;
+      if (el) observer.observe(el);
     });
-    if (cur !== active) { active = cur; paintTabs(); }
   }
 
   /* ---------- 갤러리 4구역 그룹핑 ---------- */
@@ -660,13 +681,25 @@
       document.documentElement.style.touchAction = '';
       document.body.style.touchAction = '';
       var greeting = document.getElementById('greeting');
-      if (greeting) greeting.scrollIntoView({ behavior: 'smooth' });
-      
-      // 스무스 스크롤이 끝날 즈음(약 800ms 후)에 페이드업 효과 발동
-      setTimeout(function() {
-        var introTexts = document.querySelectorAll('.intro-fade-up');
-        introTexts.forEach(function(el) { el.classList.add('visible'); });
-      }, 800);
+      if (greeting) {
+        var startY = window.scrollY;
+        var targetY = greeting.getBoundingClientRect().top + startY;
+        var dist = targetY - startY;
+        var dur = 500; // 약 15% 빨라진 속도 (500ms)
+        var startT = null;
+        function anim(t) {
+          if (!startT) startT = t;
+          var p = Math.min((t - startT) / dur, 1);
+          var ease = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p; // ease-in-out
+          window.scrollTo(0, startY + dist * ease);
+          if (p < 1) requestAnimationFrame(anim);
+          else {
+            var introTexts = document.querySelectorAll('.intro-fade-up');
+            introTexts.forEach(function(el) { el.classList.add('visible'); });
+          }
+        }
+        requestAnimationFrame(anim);
+      }
     }, 2300);
   }
 
@@ -711,17 +744,8 @@
     preventZoom();
     setupKakaoShare();
     setupFades();
-    updateActive();
+    setupTabObserver();
 
-    var scrollRaf;
-    window.addEventListener('scroll', function () { 
-      if (scrollRaf) return;
-      scrollRaf = requestAnimationFrame(function() {
-        updateActive(); 
-        scrollRaf = null;
-      });
-    }, { passive: true });
-    
     window.addEventListener('resize', setVH);
     window.addEventListener('orientationchange', setVH);
     if (window.visualViewport) window.visualViewport.addEventListener('resize', setVH);
