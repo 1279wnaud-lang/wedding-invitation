@@ -541,10 +541,10 @@
       setTimeout(function() {
         item.classList.remove('hatch-shake');
       }, 1200);
-      var nextTime = 1500 + Math.random() * 2000;
+      var nextTime = 800 + Math.random() * 1200; // 0.8초 ~ 2.0초 사이로 턴 넘기는 속도 단축
       setTimeout(triggerBounce, nextTime);
     }
-    setTimeout(triggerBounce, 2000);
+    setTimeout(triggerBounce, 1500);
   }
 
   var lightboxObserver;
