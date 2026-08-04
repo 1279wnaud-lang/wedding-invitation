@@ -526,8 +526,14 @@
   function setupGalleryRandomBounce() {
     var items = document.querySelectorAll('#gallery-masonry .gallery-item');
     if (items.length === 0) return;
+    var lastIndex = -1;
     function triggerBounce() {
-      var randIndex = Math.floor(Math.random() * items.length);
+      var randIndex;
+      do {
+        randIndex = Math.floor(Math.random() * items.length);
+      } while (randIndex === lastIndex && items.length > 1);
+      lastIndex = randIndex;
+      
       var item = items[randIndex];
       item.classList.remove('hatch-shake');
       void item.offsetWidth;
