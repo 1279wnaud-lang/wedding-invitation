@@ -101,7 +101,7 @@
     position: absolute;
     top: 10px;
     left: 50%;
-    transform: translate(-50%, 5px);
+    transform: translateX(-50%);
     background: #7c1d2a;
     color: #fff;
     font-size: 11px;
@@ -110,14 +110,13 @@
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     opacity: 0;
-    transform: translateY(5px);
-    transition: opacity 0.2s, transform 0.2s;
+    transition: opacity 0.2s;
     pointer-events: none;
     z-index: 10;
   }
   .hatch-shake .bounce-touch-label {
     opacity: 1;
-    transform: translate(-50%, 0);
+    transform: translateX(-50%);
   }
 </style>
 </head>
@@ -181,7 +180,7 @@
       새로운 출발의 순간에 함께해 주시면<br>감사하겠습니다.
     </div>
     <div class="intro-fade-up intro-fade-up-delay-4" style="margin-top: 10px; display: flex; flex-direction: column; align-items: center;">
-      <div style="font-size: 12px; letter-spacing: 0.05em; color: #a49c94; margin-bottom: 10px; font-weight: 600;">아래로 스크롤해 주세요</div>
+      <div style="font-size: 12px; letter-spacing: 0.05em; color: #a49c94; margin-bottom: 2px; font-weight: 600;">아래로 스크롤해 주세요</div>
       <div class="chevron-bounce" style="width: 14px; height: 14px; border-bottom: 2px solid #a49c94; border-right: 2px solid #a49c94; transform: rotate(45deg);"></div>
     </div>
   </section>
