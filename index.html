@@ -685,7 +685,7 @@
         var startY = window.scrollY;
         var targetY = greeting.getBoundingClientRect().top + startY;
         var dist = targetY - startY;
-        var dur = 400; // 약 15% 빨라진 속도 (500ms) -> 400ms로 더 빠르게 수정
+        var dur = 300; // 스크롤 속도 300ms로 수정
         var startT = null;
         function anim(t) {
           if (!startT) startT = t;
@@ -700,7 +700,7 @@
         }
         requestAnimationFrame(anim);
       }
-    }, 2300);
+    }, 2250);
   }
 
   /* ---------- 확대 방지 ---------- */
