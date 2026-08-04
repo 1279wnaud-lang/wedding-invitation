@@ -96,56 +96,27 @@
   /* 네이티브 스크롤 스냅 */
   html { scroll-snap-type: y mandatory; }
   section { scroll-snap-align: start; }
-  /* 갤러리 탭 온보딩 애니메이션 */
-  .tap-onboarding {
+  /* 바운스 모션 터치 유도 라벨 */
+  .bounce-touch-label {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 48px;
-    height: 48px;
+    bottom: -6px;
+    right: -6px;
+    background: #7c1d2a;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 6px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    opacity: 0;
+    transform: translateY(5px);
+    transition: opacity 0.2s, transform 0.2s;
     pointer-events: none;
-    z-index: 100;
-    opacity: 0;
+    z-index: 10;
   }
-  .tap-hand {
-    width: 48px;
-    height: 48px;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
-    transform-origin: bottom right;
-  }
-  .tap-ripple {
-    position: absolute;
-    top: -6px;
-    left: 9px;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.9);
-    background: rgba(255, 255, 255, 0.4);
-    opacity: 0;
-    box-sizing: border-box;
-  }
-  .animate-tap .tap-onboarding { animation: tapContainer 2.5s ease-out forwards; }
-  .animate-tap .tap-hand { animation: tapHand 2.5s ease-out forwards; }
-  .animate-tap .tap-ripple-1 { animation: tapRipple 2.5s ease-out forwards; }
-  .animate-tap .tap-ripple-2 { animation: tapRipple 2.5s ease-out 0.2s forwards; }
-
-  @keyframes tapContainer {
-    0% { opacity: 0; transform: translate(20px, 30px) rotate(-15deg); }
-    15% { opacity: 1; transform: translate(-10px, -10px) rotate(-15deg); }
-    85% { opacity: 1; transform: translate(-10px, -10px) rotate(-15deg); }
-    100% { opacity: 0; transform: translate(-10px, -10px) rotate(-15deg); }
-  }
-  @keyframes tapHand {
-    0%, 20% { transform: scale(1); }
-    25% { transform: scale(0.85); }
-    35%, 100% { transform: scale(1); }
-  }
-  @keyframes tapRipple {
-    0%, 24% { opacity: 0; transform: scale(0.2); }
-    25% { opacity: 1; transform: scale(0.5); }
-    60% { opacity: 0; transform: scale(2.5); }
-    100% { opacity: 0; }
+  .hatch-shake .bounce-touch-label {
+    opacity: 1;
+    transform: translateY(0);
   }
 </style>
 </head>
@@ -154,16 +125,16 @@
 <div style="max-width:500px;margin:0 auto;background:#ffffff;min-height:100vh;min-height:100dvh;position:relative;box-shadow:0 0 60px rgba(0,0,0,0.28);padding-bottom:var(--nav-h, 74px);overflow:hidden;">
 
   <!-- ============ HERO / 메인 포스터 ============ -->
-  <section id="home" style="--reveal-x:37%; --reveal-y:60%; --reveal-r:0px; --reveal-dur:1.6s; --collapse-dur:0.3s; --letter-top:32px; position:relative;height:var(--avail);height:calc(100dvh - var(--nav-h, 62px));min-height:420px;background-image:url('images/home-bw.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;overflow:hidden;">
+  <section id="home" style="--reveal-x:37%; --reveal-y:60%; --reveal-r:0px; --reveal-dur:1.8s; --collapse-dur:0.3s; --letter-top:32px; position:relative;height:var(--avail);height:calc(100dvh - var(--nav-h, 62px));min-height:420px;background-image:url('images/home-bw.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;overflow:hidden;">
     <div id="home-bw" style="position:absolute;inset:0;background-image:url('images/home-bw.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;z-index:0;transform:translateZ(0);"></div>
-    <div id="home-color" style="position:absolute;inset:0;background-image:url('images/home-color.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;z-index:1;will-change:clip-path;transform:translateZ(0);clip-path:circle(var(--reveal-r,0px) at var(--reveal-x,34%) var(--reveal-y,48%));-webkit-clip-path:circle(var(--reveal-r,0px) at var(--reveal-x,34%) var(--reveal-y,48%));transition:clip-path var(--reveal-dur,1.6s) cubic-bezier(.22,.61,.36,1), -webkit-clip-path var(--reveal-dur,1.6s) cubic-bezier(.22,.61,.36,1);"></div>
+    <div id="home-color" style="position:absolute;inset:0;background-image:url('images/home-color.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;z-index:1;will-change:clip-path;transform:translateZ(0);clip-path:circle(var(--reveal-r,0px) at var(--reveal-x,34%) var(--reveal-y,48%));-webkit-clip-path:circle(var(--reveal-r,0px) at var(--reveal-x,34%) var(--reveal-y,48%));transition:clip-path var(--reveal-dur,1.8s) cubic-bezier(.22,.61,.36,1), -webkit-clip-path var(--reveal-dur,1.8s) cubic-bezier(.22,.61,.36,1);"></div>
 
     <div style="position: absolute; top: var(--letter-top, 20px); left: 0; right: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 24px">
       <div id="lettering" style="font-family: var(--font-script); color: #c1121f; line-height: 1.18; padding: 12px 0; text-shadow: 0 2px 14px rgba(246,242,236,0.65); display: flex; flex-direction: column; align-items: center; opacity: 0; transition: opacity .35s ease;">
         <div style="font-family: 'Authentic Birthday',cursive; font-size: clamp(50px, 19cqw, 90px); animation: drawIn 0.8s linear both; animation-play-state: paused; width: 288px; height: 85px; color: #FFFFFF; position: static">Welcome</div><div style="font-family: 'Authentic Birthday',cursive; font-size: clamp(42px, 15cqw, 70px); margin-top: 2px; animation: drawIn 0.8s linear 0.8s both; animation-play-state: paused; width: 411px; height: 87px; color: #FFFFFF">to our wedding</div><div style="font-size: clamp(24px, 8.5cqw, 42px); margin-top: -15px; animation: drawIn 0.8s linear 1.6s both; animation-play-state: paused; width: 163px; color: #FFFFFF">2026 . 11 . 22</div>
       </div>
     </div>
-    <div id="lettering-color-layer" style="position:absolute;inset:0;z-index:4;pointer-events:none;clip-path:circle(var(--reveal-r,0px) at var(--reveal-x,37%) var(--reveal-y,60%));-webkit-clip-path:circle(var(--reveal-r,0px) at var(--reveal-x,28%) var(--reveal-y,62%));transition:clip-path var(--reveal-dur,1.6s) cubic-bezier(.22,.61,.36,1), -webkit-clip-path var(--reveal-dur,1.6s) cubic-bezier(.22,.61,.36,1);">
+    <div id="lettering-color-layer" style="position:absolute;inset:0;z-index:4;pointer-events:none;clip-path:circle(var(--reveal-r,0px) at var(--reveal-x,37%) var(--reveal-y,60%));-webkit-clip-path:circle(var(--reveal-r,0px) at var(--reveal-x,28%) var(--reveal-y,62%));transition:clip-path var(--reveal-dur,1.8s) cubic-bezier(.22,.61,.36,1), -webkit-clip-path var(--reveal-dur,1.8s) cubic-bezier(.22,.61,.36,1);">
       <div style="position: absolute; top: var(--letter-top, 20px); left: 0; right: 0; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 24px">
         <div style="font-family: var(--font-script); color: #A80505; line-height: 1.18; padding: 12px 0; text-shadow: 0 2px 14px rgba(246,242,236,0.65); display: flex; flex-direction: column; align-items: center;">
           <div style="font-family: 'Authentic Birthday',cursive; font-size: clamp(50px, 19cqw, 90px); width: 288px; height: 85px; color: #A80505; position: static">Welcome</div><div style="font-family: 'Authentic Birthday',cursive; font-size: clamp(42px, 15cqw, 70px); margin-top: 2px; width: 411px; height: 87px; color: #A80505">to our wedding</div><div style="font-size: clamp(24px, 8.5cqw, 42px); margin-top: -15px; width: 163px; color: #A80505">2026 . 11 . 22</div>
@@ -581,14 +552,7 @@
       item.appendChild(img);
       item.appendChild(badge);
       
-      // 첫 번째 썸네일에 온보딩(손가락 터치) UI 추가
-      if (idx === 0) {
-        var obd = document.createElement('div');
-        obd.className = 'tap-onboarding';
-        obd.innerHTML = '<div class="tap-ripple tap-ripple-1"></div><div class="tap-ripple tap-ripple-2"></div>' +
-                        '<svg class="tap-hand" viewBox="0 0 24 24" fill="#ffffff" stroke="#7c1d2a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5V4.5C9 3.67 9.67 3 10.5 3 11.33 3 12 3.67 12 4.5v6M12 9.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v2.5M15 10.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v3.5M18 12.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v3.5C21 18.76 18.76 21 16 21H11.5c-1.33 0-2.6-.53-3.54-1.46l-4.2-4.2c-.59-.59-.59-1.54 0-2.12.59-.59 1.54-.59 2.12 0l3.12 3.12V11.5c0-.83.67-1.5 1.5-1.5z"/></svg>';
-        item.appendChild(obd);
-      }
+      var touchLabel = document.createElement('div'); touchLabel.className = 'bounce-touch-label'; touchLabel.innerText = '터치!'; item.appendChild(touchLabel);
       
       masonry.appendChild(item);
     });
@@ -598,17 +562,6 @@
   function setupGalleryRandomBounce() {
     var items = document.querySelectorAll('#gallery-masonry .gallery-item');
     if (items.length === 0) return;
-    
-    // 갤러리 진입 시 1회성 터치 온보딩 트리거
-    if (window.IntersectionObserver) {
-      var ob = new IntersectionObserver(function(entries) {
-        if (entries[0].isIntersecting) {
-          items[0].classList.add('animate-tap');
-          ob.disconnect();
-        }
-      }, { threshold: 0.5 });
-      ob.observe(items[0]);
-    }
     
     var lastIndex = -1;
     function triggerBounce() {
@@ -779,7 +732,7 @@
     var color = document.getElementById('home-color');
     var letterColor = document.getElementById('lettering-color-layer');
     var layers = [color, letterColor].filter(Boolean);
-    var CLIP_T = 'clip-path var(--reveal-dur,1.6s) cubic-bezier(.22,.61,.36,1), -webkit-clip-path var(--reveal-dur,1.6s) cubic-bezier(.22,.61,.36,1)';
+    var CLIP_T = 'clip-path var(--reveal-dur,1.8s) cubic-bezier(.22,.61,.36,1), -webkit-clip-path var(--reveal-dur,1.8s) cubic-bezier(.22,.61,.36,1)';
     layers.forEach(function (l) { l.style.transition = CLIP_T; l.style.opacity = '1'; });
     if (s) s.style.setProperty('--reveal-r', '115%');
 
@@ -793,7 +746,7 @@
         var startY = window.scrollY;
         var targetY = greeting.getBoundingClientRect().top + startY;
         var dist = targetY - startY;
-        var dur = 270; // 이동스크롤 속도 1.3배 빠르게
+        var dur = 233; // 이동스크롤 속도 1.5배 빠르게 (기존 350ms)
         var startT = null;
         function anim(t) {
           if (!startT) startT = t;
@@ -808,7 +761,7 @@
         }
         requestAnimationFrame(anim);
       }
-    }, 1600);
+    }, 1800);
   }
 
   /* ---------- 확대 방지 ---------- */
