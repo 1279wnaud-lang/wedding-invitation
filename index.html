@@ -92,21 +92,11 @@
   .intro-fade-up-delay-4 { transition-delay: 3.0s !important; }
   @keyframes chevronBounce { 0%, 100% { transform: translateY(0) rotate(45deg); } 50% { transform: translateY(8px) rotate(45deg); } }
   .chevron-bounce { animation: chevronBounce 1.5s infinite ease-in-out; }
-
-  /* 섹션 겹침 효과 (Sticky Parallax) */
-  section { will-change: transform; }
-  #home { position: sticky; top: 0; z-index: 10; box-shadow: none; }
-  #greeting { position: sticky; top: 0; z-index: 11; min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 -20px 40px rgba(0,0,0,0.12); }
-  #calendar { position: sticky; top: 0; z-index: 12; box-shadow: 0 -20px 40px rgba(0,0,0,0.12); }
-  #gallery { position: relative; z-index: 13; box-shadow: 0 -20px 40px rgba(0,0,0,0.12); }
-  #location { position: sticky; top: 0; z-index: 14; min-height: 100dvh; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 -20px 40px rgba(0,0,0,0.12); }
-  #account { position: sticky; top: 0; z-index: 15; box-shadow: 0 -20px 40px rgba(0,0,0,0.12); }
-  #footer { position: relative; z-index: 16; box-shadow: 0 -20px 40px rgba(0,0,0,0.12); }
 </style>
 </head>
 <body>
 
-<div style="max-width:500px;margin:0 auto;background:#ffffff;min-height:100vh;min-height:100dvh;position:relative;box-shadow:0 0 60px rgba(0,0,0,0.28);padding-bottom:var(--nav-h, 74px);overflow:clip;">
+<div style="max-width:500px;margin:0 auto;background:#ffffff;min-height:100vh;min-height:100dvh;position:relative;box-shadow:0 0 60px rgba(0,0,0,0.28);padding-bottom:var(--nav-h, 74px);overflow:hidden;">
 
   <!-- ============ HERO / 메인 포스터 ============ -->
   <section id="home" style="--reveal-x:37%; --reveal-y:60%; --reveal-r:0px; --reveal-dur:2.1s; --collapse-dur:0.3s; --letter-top:32px; position:relative;height:var(--avail);height:calc(100dvh - var(--nav-h, 62px));min-height:420px;background-image:url('images/home-bw.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;overflow:hidden;">
