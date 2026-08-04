@@ -71,6 +71,10 @@
   #lightbox-track img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 24px rgba(0,0,0,0.4); user-select: none; transition: box-shadow 0.3s; }
   #lb-close { position: absolute; top: 20px; right: 24px; color: #fff; font-size: 36px; font-weight: 300; cursor: pointer; z-index: 10002; padding: 10px; }
   #lb-counter { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 14px; letter-spacing: 2px; z-index: 10002; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+
+  /* 페이드업 효과 */
+  .fade-up { opacity: 0; transform: translateY(24px); transition: opacity 1s cubic-bezier(0.22, 0.61, 0.36, 1), transform 1s cubic-bezier(0.22, 0.61, 0.36, 1); }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
 </style>
 </head>
 <body>
@@ -124,7 +128,7 @@
       </div>
     </div>
     <div style="width:34px;height:1px;background:#dcdce0;margin:30px auto 30px;"></div>
-    <p style="margin: 0; font-size: 15.5px; line-height: 2.15; color: #3d362f; letter-spacing: 0.01em; word-break: keep-all; font-family:var(--font-body)">
+    <p class="fade-up" style="margin: 0; font-size: 15.5px; line-height: 2.15; color: #3d362f; letter-spacing: 0.01em; word-break: keep-all; font-family:var(--font-body)">
       <span style="font-family: 'Gowun Batang', 'Nanum Myeongjo', 'KoPub Batang', serif; font-style: italic; color: #7C1D2A; font-weight: 600;">"우리 인생의 가장 멋진 순간은<br>뜻하지 않게 찾아온다."</span><br>
       <span style="font-size: 13.5px; color: #8a827b;">- 영화 &lt;맘마미아&gt; -</span><br><br>
       우연처럼 시작된 우리의 인연은<br>
