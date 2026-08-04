@@ -92,6 +92,10 @@
   .intro-fade-up-delay-4 { transition-delay: 3.0s !important; }
   @keyframes chevronBounce { 0%, 100% { transform: translateY(0) rotate(45deg); } 50% { transform: translateY(8px) rotate(45deg); } }
   .chevron-bounce { animation: chevronBounce 1.5s infinite ease-in-out; }
+
+  /* 네이티브 스크롤 스냅 */
+  html { scroll-snap-type: y mandatory; }
+  section { scroll-snap-align: start; }
 </style>
 </head>
 <body>
@@ -463,67 +467,6 @@
     requestAnimationFrame(animate);
   }
 
-  /* ---------- 자석 스냅 효과 (75% 보일 때 빠르게 당김, 아래로 스크롤 시에만) ---------- */
-  function setupMagneticSnap() {
-    var isScrollingDown = false;
-    var lastScrollY = window.scrollY;
-    var isSnapping = false;
-    var ids = ['greeting', 'calendar', 'gallery', 'location', 'account'];
-    var sections = [];
-    
-    // DOM 로드 후 섹션 캐싱
-    setTimeout(function() {
-      sections = ids.map(function(id) { return document.getElementById(id); }).filter(Boolean);
-    }, 100);
-
-    window.addEventListener('scroll', function() {
-      if (isSnapping || sections.length === 0) return;
-      var currentScrollY = window.scrollY;
-      isScrollingDown = currentScrollY > lastScrollY;
-      
-      if (isScrollingDown) {
-        var vh = window.innerHeight;
-        // 섹션 상단이 화면 25% 지점 통과 == 다음 섹션이 75% 이상 보임
-        var triggerPoint = vh * 0.25; 
-        
-        for (var i = 0; i < sections.length; i++) {
-          var rect = sections[i].getBoundingClientRect();
-          // 이미 상단에 도달(2% 이내)했으면 무시하여 무한 루프/렉 방지
-          if (rect.top > (vh * 0.02) && rect.top <= triggerPoint) {
-            magneticSnap(sections[i]);
-            break;
-          }
-        }
-      }
-      lastScrollY = currentScrollY;
-    }, { passive: true });
-
-    function magneticSnap(el) {
-      if (isSnapping) return;
-      isSnapping = true;
-      var start = window.scrollY;
-      var target = el.getBoundingClientRect().top + start;
-      var duration = 300; // 약 1.2~1.5배 빠르게 (300ms)
-      var startTime = null;
-      
-      function animate(currentTime) {
-        if (!startTime) startTime = currentTime;
-        var elapsed = currentTime - startTime;
-        var progress = Math.min(elapsed / duration, 1);
-        // 네비게이션 이동과 동일한 부드러운 가감속(easeInOutCubic) 적용하여 딱딱 끊기는 현상 해결
-        var ease = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-        window.scrollTo(0, start + (target - start) * ease);
-        
-        if (elapsed < duration) {
-          requestAnimationFrame(animate);
-        } else {
-          setTimeout(function() { isSnapping = false; }, 100); // 렉 꼬임 방지를 위한 쿨타임
-        }
-      }
-      requestAnimationFrame(animate);
-    }
-  }
-
   /* ---------- 탭바 상태 업데이트 (IntersectionObserver로 스크롤 성능 개선) ---------- */
   function setupTabObserver() {
     if (!window.IntersectionObserver) return;
@@ -838,7 +781,6 @@
     setupKakaoShare();
     setupFades();
     setupTabObserver();
-    setupMagneticSnap();
 
     window.addEventListener('resize', setVH);
     window.addEventListener('orientationchange', setVH);
