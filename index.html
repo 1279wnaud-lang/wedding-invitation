@@ -510,8 +510,8 @@
         if (!startTime) startTime = currentTime;
         var elapsed = currentTime - startTime;
         var progress = Math.min(elapsed / duration, 1);
-        // easeOutQuint: 초반에 매우 빠르게 이동시켜 네이티브 스크롤 모멘텀 렉을 압도
-        var ease = 1 - Math.pow(1 - progress, 5);
+        // 네비게이션 이동과 동일한 부드러운 가감속(easeInOutCubic) 적용하여 딱딱 끊기는 현상 해결
+        var ease = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
         window.scrollTo(0, start + (target - start) * ease);
         
         if (elapsed < duration) {
