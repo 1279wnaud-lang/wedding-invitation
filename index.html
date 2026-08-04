@@ -62,11 +62,11 @@
   .gallery-item { cursor: pointer; position: relative; aspect-ratio: 2/3; margin-bottom: 8px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: transform 0.2s ease, box-shadow 0.2s ease; }
   .gallery-item:active { transform: scale(0.98); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
   @keyframes galleryBounce {
-    0%, 76%, 100% { transform: translateY(0); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-    82%, 94% { transform: translateY(-6px); box-shadow: 0 10px 20px rgba(0,0,0,0.22); }
-    88% { transform: translateY(0); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    0%, 100% { transform: translateY(0); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+    25%, 75% { transform: translateY(-6px); box-shadow: 0 10px 20px rgba(0,0,0,0.22); }
+    50% { transform: translateY(0); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
   }
-  .hatch-shake { animation: galleryBounce 5s infinite ease-in-out; }
+  .hatch-shake { animation: galleryBounce 1.2s ease-in-out; }
   .gallery-item img { display: block; width: 100%; height: 100%; object-fit: cover; position: relative; z-index: 1; border-radius: 4px; background: #ececed; }
   .album-badge { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.55); color: #fff; font-size: 11px; padding: 3px 8px; border-radius: 12px; z-index: 3; display: flex; align-items: center; letter-spacing: 0.5px; backdrop-filter: blur(2px); font-weight: 500; pointer-events: none; }
   
@@ -491,11 +491,9 @@
     var masonry = document.getElementById('gallery-masonry');
     if (!masonry) return;
     masonry.innerHTML = '';
-    var delays = ['2.1s', '3.5s', '4.8s', '0.8s'];
     GALLERY_GROUPS.forEach(function (group, idx) {
       var item = document.createElement('div');
-      item.className = 'gallery-item hatch-shake';
-      item.style.animationDelay = delays[idx % delays.length];
+      item.className = 'gallery-item';
       
       var ph = document.createElement('div');
       ph.className = 'ph-slot';
@@ -521,6 +519,25 @@
       item.appendChild(badge);
       masonry.appendChild(item);
     });
+  }
+
+  /* ---------- 갤러리 썸네일 랜덤 바운스 ---------- */
+  function setupGalleryRandomBounce() {
+    var items = document.querySelectorAll('#gallery-masonry .gallery-item');
+    if (items.length === 0) return;
+    function triggerBounce() {
+      var randIndex = Math.floor(Math.random() * items.length);
+      var item = items[randIndex];
+      item.classList.remove('hatch-shake');
+      void item.offsetWidth;
+      item.classList.add('hatch-shake');
+      setTimeout(function() {
+        item.classList.remove('hatch-shake');
+      }, 1200);
+      var nextTime = 1500 + Math.random() * 2000;
+      setTimeout(triggerBounce, nextTime);
+    }
+    setTimeout(triggerBounce, 2000);
   }
 
   var lightboxObserver;
@@ -739,6 +756,7 @@
     computeDday();
     buildTabs();
     buildGallery();
+    setupGalleryRandomBounce();
     setupLightboxEvents();
     buildAccounts();
     preventZoom();
