@@ -563,23 +563,25 @@
     var items = document.querySelectorAll('#gallery-masonry .gallery-item');
     if (items.length === 0) return;
     
-    var lastIndex = -1;
+    var sequence = [0, 1, 3, 2];
+    var seqIndex = 0;
+    
     function triggerBounce() {
-      var randIndex;
-      do {
-        randIndex = Math.floor(Math.random() * items.length);
-      } while (randIndex === lastIndex && items.length > 1);
-      lastIndex = randIndex;
+      if (seqIndex >= items.length) seqIndex = 0;
+      var targetIndex = sequence[seqIndex];
+      seqIndex = (seqIndex + 1) % sequence.length;
       
-      var item = items[randIndex];
-      item.classList.remove('hatch-shake');
-      void item.offsetWidth;
-      item.classList.add('hatch-shake');
-      setTimeout(function() {
+      var item = items[targetIndex];
+      if (item) {
         item.classList.remove('hatch-shake');
-      }, 1200);
-      var nextTime = 800 + Math.random() * 1200; // 0.8초 ~ 2.0초 사이로 턴 넘기는 속도 단축
-      setTimeout(triggerBounce, nextTime);
+        void item.offsetWidth;
+        item.classList.add('hatch-shake');
+        setTimeout(function() {
+          item.classList.remove('hatch-shake');
+        }, 1200);
+      }
+      
+      setTimeout(triggerBounce, 1600);
     }
     setTimeout(triggerBounce, 1500);
   }
