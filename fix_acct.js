@@ -1,0 +1,1 @@
+const fs = require('fs'); let c = fs.readFileSync('index.html', 'utf8'); c = c.replace({ role: '어머니', name: '권용희', acct: '기업은행 31308580301012' }, { role: '어머니', name: '권용희', acct: '하나은행 620164756425' }); fs.writeFileSync('index.html', c);
